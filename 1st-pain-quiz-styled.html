@@ -385,8 +385,10 @@ function submitQuiz(){
 
   const payload = {
     fields: {
-      TITLE: 'Квиз PainHelp — ' + email,
-      EMAIL: [{ VALUE: email, VALUE_TYPE: 'WORK' }],
+      TITLE: 'Тест Квиз ver 260505 — ' + email,               //Наименование лида
+      SOURCE_ID: "WEB",                                       //источник лида типовой
+      EMAIL: [{ VALUE: email, VALUE_TYPE: 'PRIVATE' }],       //тип имейл - ЧАСТНЫЙ
+      SOURCE_DESCRIPTION: "Тест Квиз ver 260505 — ",          //Коммент к источнику - видно менеджеру
       UF_CRM_1777993552: totalScore,
       UF_CRM_1777993608: category,
       UF_CRM_1777993643: answers.q1 || '',
