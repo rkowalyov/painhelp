@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Проверьте свою боль за 0-1 минуту",
+    "title": "Проверьте свою боль за 1 минуту",
     "subtitle": "Ответьте на 5 вопросов и получите понимание, стоит ли обращаться к специалисту",
     "trust_badges": ["Без регистрации", "Анонимно", "Основано на опыте врачей"],
     "cta_start": "Пройти тест",
@@ -14,7 +14,7 @@
   "questions": [
     {
       "id": "pain_location",
-      "crm_field": "UF_CRM_PAIN_LOCATION",
+      "crm_field": "UF_CRM_1777993643",
       "text": "Где вы чаще всего чувствуете боль?",
       "options": [
         { "label": "Голова",  "value": "head",   "score": 1 },
@@ -26,7 +26,7 @@
     },
     {
       "id": "pain_duration",
-      "crm_field": "UF_CRM_PAIN_DURATION",
+      "crm_field": "UF_CRM_1777993660",
       "text": "Как давно появилась боль?",
       "flag": "chronic_if_gte_index",
       "chronic_threshold": 2,
@@ -39,7 +39,7 @@
     },
     {
       "id": "pain_intensity",
-      "crm_field": "UF_CRM_PAIN_INTENSITY",
+      "crm_field": "UF_CRM_1777993688",
       "text": "Насколько сильная боль?",
       "options": [
         { "label": "Слабая, почти не мешает", "value": "low",      "score": 0 },
@@ -50,7 +50,7 @@
     },
     {
       "id": "pain_impact",
-      "crm_field": "UF_CRM_PAIN_IMPACT",
+      "crm_field": "UF_CRM_1777993717",
       "text": "Насколько боль влияет на вашу жизнь?",
       "options": [
         { "label": "Практически не влияет",              "value": "none",     "score": 0 },
@@ -60,7 +60,7 @@
     },
     {
       "id": "doctor_visit",
-      "crm_field": "UF_CRM_DOCTOR_VISIT",
+      "crm_field": "UF_CRM_1777993749",
       "text": "Обращались ли вы к врачу с этой проблемой?",
       "flag": "failed_treatment_if_value",
       "failed_treatment_value": "no_result",
@@ -94,11 +94,10 @@
   },
 
   "crm_fields": {
-    "score":            "UF_CRM_QUIZ_SCORE",
-    "result":           "UF_CRM_QUIZ_RESULT",
-    "is_chronic":       "UF_CRM_IS_CHRONIC",
-    "failed_treatment": "UF_CRM_FAILED_TREATMENT",
-    "source":           "UF_CRM_SOURCE",
-    "quiz_date":        "UF_CRM_QUIZ_DATE"
+    "score":            "UF_CRM_1777993552",
+    "result":           "UF_CRM_1777993608",
+    "is_chronic":       "UF_CRM_1777993788",
+    "failed_treatment": "UF_CRM_1777993848",
+    "source":           "UF_CRM_1777993881"
   }
 }
