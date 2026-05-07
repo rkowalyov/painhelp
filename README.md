@@ -1,11 +1,8 @@
 # painhelp
 ПроБоль
 
-========================
-260505
-========================
+===260507===
 
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
 # сейчас все работает о лично. Теперь хотелось бы выделить сценарий квиза, чтобы в коде можно было заменить ссылку на файл-сценарий и не менять весь код
 
@@ -38,7 +35,7 @@ const SCENARIO_URL = "./scenarios/pain-v1.json";
     "subtitle": "Ответьте на 5 вопросов и получите понимание, стоит ли обращаться к специалисту",
     "trust_badges": ["Без регистрации", "Анонимно", "Основано на опыте врачей"],
     "cta_start": "Пройти тест",
-    "webhook": "https://interpain.bitrix24.ru/rest/1/nhbt87ainfxmcsii/crm.lead.add",
+    "webhook": "https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.add",
     "source_label": "Тест Квиз 26_05_05"
   },
 
@@ -140,10 +137,7 @@ const SCENARIO_URL = "./scenarios/pain-v1.json";
 
 
 
-========================
-260505
-========================
-
+===260505===
 
 текущее значение вебхука 
 const WEBHOOK_URL = 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.add.json';
