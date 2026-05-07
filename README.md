@@ -1,6 +1,149 @@
 # painhelp
 ПроБоль
 
+========================
+260505
+========================
+
+<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
+
+# сейчас все работает о лично. Теперь хотелось бы выделить сценарий квиза, чтобы в коде можно было заменить ссылку на файл-сценарий и не менять весь код
+
+Отличная идея — разделить **данные** и **движок** квиза. Тогда для нового квиза достаточно создать новый JSON-файл со сценарием и поменять одну строку в HTML.
+
+## Архитектура
+
+```
+rkowalyov.github.io/pain-quiz/
+├── pain-quiz-styled.html   ← движок (больше не трогаем)
+└── scenarios/
+    └── pain-v1.json        ← сценарий (меняем здесь)
+```
+
+В `pain-quiz-styled.html` — одна строка для смены сценария:
+
+```js
+const SCENARIO_URL = "./scenarios/pain-v1.json";
+```
+
+
+***
+
+## Формат JSON-сценария
+
+```json
+{
+  "meta": {
+    "title": "Проверьте свою боль за 1 минуту",
+    "subtitle": "Ответьте на 5 вопросов и получите понимание, стоит ли обращаться к специалисту",
+    "trust_badges": ["Без регистрации", "Анонимно", "Основано на опыте врачей"],
+    "cta_start": "Пройти тест",
+    "webhook": "https://interpain.bitrix24.ru/rest/1/nhbt87ainfxmcsii/crm.lead.add",
+    "source_label": "Тест Квиз 26_05_05"
+  },
+
+  "questions": [
+    {
+      "id": "pain_location",
+      "crm_field": "UF_CRM_PAIN_LOCATION",
+      "text": "Где вы чаще всего чувствуете боль?",
+      "options": [
+        { "label": "Голова",  "value": "head",   "score": 1 },
+        { "label": "Спина",   "value": "back",   "score": 2 },
+        { "label": "Шея",     "value": "neck",   "score": 2 },
+        { "label": "Суставы", "value": "joints", "score": 2 },
+        { "label": "Другое",  "value": "other",  "score": 1 }
+      ]
+    },
+    {
+      "id": "pain_duration",
+      "crm_field": "UF_CRM_PAIN_DURATION",
+      "text": "Как давно появилась боль?",
+      "flag": "chronic_if_gte_index",
+      "chronic_threshold": 2,
+      "options": [
+        { "label": "Несколько дней",    "value": "short",   "score": 0 },
+        { "label": "Несколько недель",  "value": "weeks",   "score": 1 },
+        { "label": "Несколько месяцев", "value": "months",  "score": 2 },
+        { "label": "Более 6 месяцев",  "value": "chronic", "score": 4 }
+      ]
+    },
+    {
+      "id": "pain_intensity",
+      "crm_field": "UF_CRM_PAIN_INTENSITY",
+      "text": "Насколько сильная боль?",
+      "options": [
+        { "label": "Слабая, почти не мешает", "value": "low",      "score": 0 },
+        { "label": "Умеренная",               "value": "medium",   "score": 1 },
+        { "label": "Сильная",                 "value": "high",     "score": 2 },
+        { "label": "Очень сильная",           "value": "very_high","score": 3 }
+      ]
+    },
+    {
+      "id": "pain_impact",
+      "crm_field": "UF_CRM_PAIN_IMPACT",
+      "text": "Насколько боль влияет на вашу жизнь?",
+      "options": [
+        { "label": "Практически не влияет",          "value": "none",     "score": 0 },
+        { "label": "Иногда мешает",                   "value": "moderate", "score": 1 },
+        { "label": "Сильно влияет на повседневные дела","value": "strong",  "score": 3 }
+      ]
+    },
+    {
+      "id": "doctor_visit",
+      "crm_field": "UF_CRM_DOCTOR_VISIT",
+      "text": "Обращались ли вы к врачу с этой проблемой?",
+      "flag": "failed_treatment_if_value",
+      "failed_treatment_value": "no_result",
+      "options": [
+        { "label": "Нет",                       "value": "no",        "score": 2 },
+        { "label": "Да, но лечение не помогло", "value": "no_result", "score": 3 },
+        { "label": "Да, сейчас прохожу лечение","value": "treatment", "score": 1 }
+      ]
+    }
+  ],
+
+  "scoring": {
+    "low":    { "max": 3, "title": "Серьёзных признаков не выявлено", "text": "Судя по вашим ответам, боль пока не выглядит хронической. Но важно наблюдать за состоянием.", "cta": ["Читать полезные материалы", "Узнать больше о боли"] },
+    "medium": { "max": 7, "title": "Боль требует внимания",            "text": "Некоторые ответы могут указывать на развитие хронической боли. Рекомендуем не откладывать.",    "cta": ["Получить консультацию", "Изучить методы лечения"] },
+    "high":   { "max": 99,"title": "Рекомендуем обратиться к специалисту","text": "Ваши ответы указывают на высокую вероятность хронической боли или неэффективного лечения.",   "cta": ["Найти клинику", "Записаться на консультацию"] }
+  },
+
+  "crm_fields": {
+    "score":            "UF_CRM_QUIZ_SCORE",
+    "result":           "UF_CRM_QUIZ_RESULT",
+    "is_chronic":       "UF_CRM_IS_CHRONIC",
+    "failed_treatment": "UF_CRM_FAILED_TREATMENT",
+    "source":           "UF_CRM_SOURCE",
+    "quiz_date":        "UF_CRM_QUIZ_DATE"
+  }
+}
+```
+
+
+***
+
+## Что даёт такой подход
+
+|  | Сейчас | После |
+| :-- | :-- | :-- |
+| Новый квиз | Переписать весь HTML | Создать новый `.json` |
+| Сменить вопрос | Искать нужную строку в коде | Открыть JSON, поправить текст |
+| Сменить webhook | Искать в коде | Одно поле `meta.webhook` в JSON |
+| Несколько квизов | Копировать весь HTML | Один HTML + разные JSON |
+
+
+***
+
+Хотите — обновлю `pain-quiz-styled.html` под эту архитектуру и сразу подготовлю `pain-v1.json` с текущим сценарием, чтобы всё совпало по полям Bitrix24?
+
+
+
+
+========================
+260505
+========================
+
 
 текущее значение вебхука 
 const WEBHOOK_URL = 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.add.json';
