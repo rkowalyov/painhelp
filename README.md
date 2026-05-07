@@ -1,7 +1,34 @@
-# painhelp
-ПроБоль
+# painhelp --- ПроБоль
+# ===260507-1===
 
-===260507===
+## Исправлены ошибки в именах полей лидов
+
+Готово! Обновлённый `pain-v1.json` с реальными именами полей.
+
+## Что было исправлено
+
+| Логическое имя | Реальное поле в Bitrix24 | Тип |
+|---|---|---|
+| QUIZ_SCORE | `UF_CRM_1777993552` | double |
+| QUIZ_RESULT | `UF_CRM_1777993608` | string |
+| PAIN_LOCATION | `UF_CRM_1777993643` | string |
+| PAIN_DURATION | `UF_CRM_1777993660` | string |
+| PAIN_INTENSITY | `UF_CRM_1777993688` | string |
+| PAIN_IMPACT | `UF_CRM_1777993717` | string |
+| DOCTOR_VISIT | `UF_CRM_1777993749` | string |
+| IS_CHRONIC | `UF_CRM_1777993788` | boolean |
+| FAILED_TREATMENT | `UF_CRM_1777993848` | boolean |
+| SOURCE | `UF_CRM_1777993881` | string |
+
+> `QUIZ_DATE` убран — такого поля в вашем Bitrix24 нет. Дату создания лида Bitrix24 фиксирует сам в `DATE_CREATE`.
+
+Замените файл `scenarios/pain-v1.json` в репозитории и проверьте — теперь все поля должны заполняться.
+
+
+
+
+
+# ===260507===
 
 
 # сейчас все работает о лично. Теперь хотелось бы выделить сценарий квиза, чтобы в коде можно было заменить ссылку на файл-сценарий и не менять весь код
@@ -137,7 +164,7 @@ const SCENARIO_URL = "./scenarios/pain-v1.json";
 
 
 
-===260505===
+# ===260505===
 
 текущее значение вебхука 
 const WEBHOOK_URL = 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.add.json';
