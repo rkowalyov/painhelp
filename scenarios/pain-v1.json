@@ -4,7 +4,7 @@
     "subtitle": "Ответьте на 5 вопросов и получите понимание, стоит ли обращаться к специалисту",
     "trust_badges": ["Без регистрации", "Анонимно", "Основано на опыте врачей"],
     "cta_start": "Пройти тест",
-    "webhook": "https://interpain.bitrix24.ru/rest/1/nhbt87ainfxmcsii/crm.lead.add",
+    "webhook": "https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.add",
     "source_label": "Тест Квиз 26_05_05",
     "email_title": "Мы почти готовы показать результат",
     "email_subtitle": "Оставьте email, чтобы получить результат и рекомендации и не потерять их",
