@@ -39,17 +39,39 @@
 
 ```
 rkowalyov.github.io/pain-quiz/
-├── pain-quiz-styled.html   ← движок (больше не трогаем)
+├── 1st-pain-quiz-styled.html   ← актуальный движок
+├── arc/                       ← архив старых реализаций
 └── scenarios/
-    └── pain-v1.json        ← сценарий (меняем здесь)
+    └── pain-v1.json           ← сценарий (меняем здесь)
 ```
 
-В `pain-quiz-styled.html` — одна строка для смены сценария:
+В `1st-pain-quiz-styled.html` основная точка смены сценария:
 
 ```js
-const SCENARIO_URL = "./scenarios/pain-v1.json";
+const DEFAULT_SCENARIO_URL = "./scenarios/pain-v1.json";
+const SCENARIO_QUERY_KEY = "quiz";
 ```
 
+Теперь сценарий можно выбирать двумя способами:
+- жестко в коде: оставить `DEFAULT_SCENARIO_URL`
+- через query-параметр: `1st-pain-quiz-styled.html?quiz=pain-v1`
+
+Если передать имя без `.json`, файл ищется в папке `scenarios/`.
+
+Пример iframe-встраивания:
+
+```html
+<iframe
+  src="https://rkowalyov.github.io/painhelp/1st-pain-quiz-styled.html?quiz=pain-v1"
+  width="100%"
+  height="720"
+  frameborder="0"
+  style="border:none;border-radius:24px;overflow:hidden;"
+  scrolling="auto"
+></iframe>
+```
+
+```
 
 ***
 
@@ -159,7 +181,7 @@ const SCENARIO_URL = "./scenarios/pain-v1.json";
 
 ***
 
-Хотите — обновлю `pain-quiz-styled.html` под эту архитектуру и сразу подготовлю `pain-v1.json` с текущим сценарием, чтобы всё совпало по полям Bitrix24?
+Хотите — обновлю `1st-pain-quiz-styled.html` под эту архитектуру и сразу подготовлю `pain-v1.json` с текущим сценарием, чтобы всё совпало по полям Bitrix24?
 
 
 

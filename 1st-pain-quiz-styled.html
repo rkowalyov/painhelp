@@ -397,9 +397,34 @@ body{
 
 <script>
 /* ==============================================
-   ЕДИНСТВЕННАЯ СТРОКА ДЛЯ СМЕНЫ СЦЕНАРИЯ
+   ПОДДЕРЖКА СМЕНЫ СЦЕНАРИЯ
    ============================================== */
-const SCENARIO_URL = "./scenarios/pain-v1.json";
+const DEFAULT_SCENARIO_URL = "./scenarios/pain-v1.json";
+const SCENARIO_QUERY_KEY = "quiz";
+
+function getQueryParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || "";
+}
+
+function resolveScenarioUrl() {
+  const rawValue = getQueryParam(SCENARIO_QUERY_KEY).trim();
+  if (!rawValue) return DEFAULT_SCENARIO_URL;
+  if (rawValue.includes("..")) return DEFAULT_SCENARIO_URL;
+
+  const safeValue = rawValue.replace(/[^a-zA-Z0-9_.\-\/]/g, "");
+  if (!safeValue) return DEFAULT_SCENARIO_URL;
+
+  if (safeValue.endsWith(".json")) {
+    return safeValue.startsWith("./") || safeValue.startsWith("/") || safeValue.includes("/")
+      ? safeValue
+      : `./scenarios/${safeValue}`;
+  }
+
+  return `./scenarios/${safeValue}.json`;
+}
+
+const SCENARIO_URL = resolveScenarioUrl();
+console.log("[QUIZ] Scenario URL:", SCENARIO_URL);
 
 /* ===================== STATE ===================== */
 let scenario = null;
