@@ -52,7 +52,27 @@
   <main class="page">
     <h1>PainHelp</h1>
     <p>Добро пожаловать на сайт PainHelp. Здесь вы можете пройти тест по боли и получить персонализированную рекомендацию.</p>
-    <a class="btn" href="/1st-pain-quiz-styled.html?quiz=pain-v1">Пройти тест</a>
+    <p id="countdown">Автоматический переход на сайт через <strong>5</strong> секунд, если не нажать кнопку.</p>
+    <a class="btn" id="quizButton" href="/1st-pain-quiz-styled.html?quiz=pain-v1">Пройти тест</a>
   </main>
+  <script>
+    const redirectUrl = 'https://www.painhelp.ru';
+    const countdownEl = document.getElementById('countdown');
+    const quizButton = document.getElementById('quizButton');
+    let seconds = 5;
+    const timer = setInterval(() => {
+      seconds -= 1;
+      if (seconds <= 0) {
+        clearInterval(timer);
+        window.location.href = redirectUrl;
+      } else {
+        countdownEl.innerHTML = `Автоматический переход на сайт через <strong>${seconds}</strong> секунд, если не нажать кнопку.`;
+      }
+    }, 1000);
+
+    quizButton.addEventListener('click', () => {
+      clearInterval(timer);
+    });
+  </script>
 </body>
 </html>
