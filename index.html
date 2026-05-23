@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PainHelp</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Inter, sans-serif;
+      background: #f7f6f2;
+      color: #28251d;
+    }
+    .page {
+      max-width: 720px;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: clamp(2rem, 2.5vw, 3rem);
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.8;
+      margin: 0 auto 1.75rem;
+      max-width: 40rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.95rem 1.75rem;
+      border-radius: 999px;
+      background: #01696f;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+    .btn:hover {
+      background: #014f57;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>PainHelp</h1>
+    <p>Добро пожаловать на сайт PainHelp. Здесь вы можете пройти тест по боли и получить персонализированную рекомендацию.</p>
+    <a class="btn" href="/1st-pain-quiz-styled.html?quiz=pain-v1">Пройти тест</a>
+  </main>
+</body>
+</html>
