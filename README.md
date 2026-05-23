@@ -62,7 +62,7 @@ const SCENARIO_QUERY_KEY = "quiz";
 
 ```html
 <iframe
-  src="https://rkowalyov.github.io/painhelp/1st-pain-quiz-styled.html?quiz=pain-v1"
+  src="https://quiz.painhelp.ru/1st-pain-quiz-styled.html?quiz=pain-v1"
   width="100%"
   height="720"
   frameborder="0"
