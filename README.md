@@ -8,6 +8,16 @@
 Параметр распознаёт варианты 1, true, yes, on.
 
 
+===260530===
+
+решена проблема прозрчности фона при вызове popup в Битрикс24
+
+в польз CSS основной/вызывающей страницы добавляем 
+
+.fancybox-content,
+.fancybox-iframe {
+  background: transparent !important;
+}
 
 # painhelp --- ПроБоль
 # ===260507-1===
