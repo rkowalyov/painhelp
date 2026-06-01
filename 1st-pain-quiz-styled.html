@@ -424,9 +424,14 @@ html{
    ============================================== */
 const DEFAULT_SCENARIO_URL = "./scenarios/pain-v1.json";
 const SCENARIO_QUERY_KEY = "quiz";
+const SKIP_COVER_QUERY_KEY = "skip_cover";
 
 function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name) || "";
+}
+
+function isTruthyParam(value) {
+  return /^(?:1|true|yes|on)$/i.test(value.trim());
 }
 
 function resolveScenarioUrl() {
@@ -461,6 +466,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!res.ok) throw new Error("HTTP " + res.status);
     scenario = await res.json();
     buildHero();
+    if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
+      startQuiz();
+    }
     console.log("[QUIZ] Scenario loaded:", SCENARIO_URL);
   } catch (e) {
     console.error("[QUIZ] Failed to load scenario:", e);
