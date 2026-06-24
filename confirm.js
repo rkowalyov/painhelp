@@ -48,9 +48,20 @@ function closeWindowAfterDelay(delayMs) {
   setTimeout(() => {
     try {
       window.close();
+      if (!window.closed) {
+        window.open('', '_self');
+        window.close();
+      }
     } catch (closeError) {
       console.warn('Window close blocked', closeError);
     }
+
+    setTimeout(() => {
+      if (!window.closed) {
+        updateStatus('Автозакрытие не удалось. Окно будет очищено.', false);
+        window.location.href = 'about:blank';
+      }
+    }, 300);
   }, delayMs);
 }
 
