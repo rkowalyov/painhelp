@@ -36,11 +36,22 @@ async function sendConfirmWebhook(id) {
 
     const result = await response.json();
     console.log('confirm webhook result', result);
-    updateStatus('Webhook вызван успешно. Проверьте результат в Bitrix24.');
+    updateStatus('Webhook вызван успешно. Страница закроется через 2 секунды.');
+    closeWindowAfterDelay(2000);
   } catch (error) {
     console.error('confirm webhook failed', error);
     updateStatus(`Ошибка webhook: ${error.message}`, true);
   }
+}
+
+function closeWindowAfterDelay(delayMs) {
+  setTimeout(() => {
+    try {
+      window.close();
+    } catch (closeError) {
+      console.warn('Window close blocked', closeError);
+    }
+  }, delayMs);
 }
 
 function initConfirmPage() {
