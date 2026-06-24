@@ -10,7 +10,28 @@ function updateStatus(message, isError = false) {
   const status = document.getElementById('status-message');
   if (status) {
     status.textContent = message;
-    status.style.color = isError ? '#b00020' : '#5d5d5d';
+    status.classList.toggle('error', isError);
+  }
+}
+
+function updateHeading(message) {
+  const heading = document.getElementById('status-heading');
+  if (heading) {
+    heading.textContent = message;
+  }
+}
+
+function showSpinner(visible) {
+  const spinner = document.getElementById('status-spinner');
+  if (spinner) {
+    spinner.style.display = visible ? 'block' : 'none';
+  }
+}
+
+function updateSubtext(message) {
+  const subtext = document.getElementById('status-subtext');
+  if (subtext) {
+    subtext.textContent = message;
   }
 }
 
@@ -19,7 +40,10 @@ async function sendConfirmWebhook(id) {
   url.searchParams.set('id', id);
   url.searchParams.set('fields[UF_CRM_LEAD_1775569282052]', '1507');
 
-  updateStatus('Выполняется вызов webhook...');
+  updateHeading('Выполняется подтверждение...');
+  updateStatus('Запрос отправлен, подождите пожалуйста.');
+  showSpinner(true);
+  updateSubtext('');
 
   try {
     const response = await fetch(url.toString(), {
@@ -36,33 +60,33 @@ async function sendConfirmWebhook(id) {
 
     const result = await response.json();
     console.log('confirm webhook result', result);
-    updateStatus('Webhook вызван успешно. Страница закроется через 2 секунды.');
-    closeWindowAfterDelay(2000);
+    showSpinner(false);
+    updateHeading('Адрес подтвержден / Address confirmed');
+    updateStatus('Адрес подтвержден. Address confirmed.');
+
+    setTimeout(() => {
+      updateSubtext('Если окно не закрылось автоматически, вы можете закрыть его вручную. / If the window did not close automatically, you may close it manually.');
+      closeWindowProgrammatically();
+    }, 2000);
   } catch (error) {
     console.error('confirm webhook failed', error);
+    showSpinner(false);
+    updateHeading('Ошибка при подтверждении');
     updateStatus(`Ошибка webhook: ${error.message}`, true);
+    updateSubtext('Попробуйте обновить страницу или закройте окно вручную.');
   }
 }
 
-function closeWindowAfterDelay(delayMs) {
-  setTimeout(() => {
-    try {
+function closeWindowProgrammatically() {
+  try {
+    window.close();
+    if (!window.closed) {
+      window.open('', '_self');
       window.close();
-      if (!window.closed) {
-        window.open('', '_self');
-        window.close();
-      }
-    } catch (closeError) {
-      console.warn('Window close blocked', closeError);
     }
-
-    setTimeout(() => {
-      if (!window.closed) {
-        updateStatus('Автозакрытие не удалось. Окно будет очищено.', false);
-        window.location.href = 'about:blank';
-      }
-    }, 300);
-  }, delayMs);
+  } catch (closeError) {
+    console.warn('Window close blocked', closeError);
+  }
 }
 
 function initConfirmPage() {
@@ -74,7 +98,10 @@ function initConfirmPage() {
   }
 
   if (!id) {
+    showSpinner(false);
+    updateHeading('Параметр id не задан');
     updateStatus('Параметр id не задан в URL.', true);
+    updateSubtext('Используйте URL вида /confirm?id=12345.');
     return;
   }
 
