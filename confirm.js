@@ -32,6 +32,29 @@ function updateSubtext(message) {
   const subtext = document.getElementById('status-subtext');
   if (subtext) {
     subtext.textContent = message;
+    subtext.style.display = message ? 'block' : 'none';
+  }
+}
+
+function showStatusText() {
+  const status = document.getElementById('status-message');
+  const subtext = document.getElementById('status-subtext');
+  if (status) {
+    status.style.display = 'block';
+  }
+  if (subtext) {
+    subtext.style.display = subtext.textContent ? 'block' : 'none';
+  }
+}
+
+function hideStatusText() {
+  const status = document.getElementById('status-message');
+  const subtext = document.getElementById('status-subtext');
+  if (status) {
+    status.style.display = 'none';
+  }
+  if (subtext) {
+    subtext.style.display = 'none';
   }
 }
 
@@ -40,8 +63,10 @@ async function sendConfirmWebhook(id) {
   url.searchParams.set('id', id);
   url.searchParams.set('fields[UF_CRM_LEAD_1775569282052]', '1507');
 
+  const startTime = Date.now();
   updateHeading('Выполняется подтверждение...');
-  updateStatus('Запрос отправлен, подождите пожалуйста.');
+  showStatusText();
+  hideStatusText();
   showSpinner(true);
   updateSubtext('');
 
@@ -60,14 +85,21 @@ async function sendConfirmWebhook(id) {
 
     const result = await response.json();
     console.log('confirm webhook result', result);
-    showSpinner(false);
-    updateHeading('Адрес подтвержден / Address confirmed');
-    updateStatus('Адрес подтвержден. Address confirmed.');
+    const elapsed = Date.now() - startTime;
+    const minDuration = 1500;
+    const wait = Math.max(0, minDuration - elapsed);
 
     setTimeout(() => {
-      updateSubtext('Если окно не закрылось автоматически, вы можете закрыть его вручную. / If the window did not close automatically, you may close it manually.');
-      closeWindowProgrammatically();
-    }, 2000);
+      showSpinner(false);
+      updateHeading('Адрес подтвержден / Address confirmed');
+      updateStatus('Адрес подтвержден. Address confirmed.');
+      showStatusText();
+
+      setTimeout(() => {
+        updateSubtext('Если окно не закрылось автоматически, вы можете закрыть его вручную. / If the window did not close automatically, you may close it manually.');
+        closeWindowProgrammatically();
+      }, 2000);
+    }, wait);
   } catch (error) {
     console.error('confirm webhook failed', error);
     showSpinner(false);
@@ -91,14 +123,10 @@ function closeWindowProgrammatically() {
 
 function initConfirmPage() {
   const id = getQueryVariable('id');
-  const info = document.getElementById('request-info');
-
-  if (info) {
-    info.textContent = `ID: ${id || 'не задан'}`;
-  }
 
   if (!id) {
     showSpinner(false);
+    showStatusText();
     updateHeading('Параметр id не задан');
     updateStatus('Параметр id не задан в URL.', true);
     updateSubtext('Используйте URL вида /confirm?id=12345.');

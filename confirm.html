@@ -68,6 +68,7 @@ permalink: /confirm
     .status-text {
       color: #5d5d5d;
       font-size: 0.98rem;
+      display: none;
     }
     .status-text.error {
       color: #b00020;
@@ -80,15 +81,11 @@ permalink: /confirm
 <body>
   <main class="page">
     <h1>Confirm</h1>
-    <p>Здесь обрабатывается запрос <code>confirm</code>.</p>
-    <p>Логика доступна по URL <code>/confirm?id=...</code>.</p>
-    <code id="request-info">ID: —</code>
-
     <div class="status-block">
       <div class="spinner" id="status-spinner"></div>
-      <div class="status-heading" id="status-heading">Ожидаем выполнения...</div>
-      <div class="status-text" id="status-message">Пожалуйста, подождите.</div>
-      <div class="status-text" id="status-subtext"></div>
+      <div class="status-heading" id="status-heading">Выполняем подтверждение...</div>
+      <div class="status-text" id="status-message" style="display:none;"></div>
+      <div class="status-text" id="status-subtext" style="display:none;"></div>
     </div>
   </main>
   <script src="/confirm.js"></script>
