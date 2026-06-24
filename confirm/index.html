@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Inter, sans-serif;
+      background: #f7f6f2;
+      color: #28251d;
+      text-align: center;
+      padding: 2rem;
+    }
+    .page {
+      max-width: 720px;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      font-size: clamp(2rem, 2.5vw, 3rem);
+    }
+    p {
+      margin: 0.75rem 0;
+      line-height: 1.7;
+    }
+    code {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.35rem 0.5rem;
+      background: #fff;
+      border: 1px solid #d6d3ce;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>Confirm</h1>
+    <p>Здесь будет обрабатываться запрос `confirm`.</p>
+    <p>Сейчас скрипт прочитает параметр <code>id</code> и вызовет webhook Bitrix24.</p>
+    <code id="request-info">ID: —</code>
+    <p id="status-message" style="margin-top:1rem; color:#5d5d5d; font-size:0.95rem;">Ожидание запроса...</p>
+  </main>
+  <script src="confirm.js"></script>
+</body>
+</html>
