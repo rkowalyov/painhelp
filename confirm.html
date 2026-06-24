@@ -1,3 +1,6 @@
+---
+permalink: /confirm
+---
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -42,11 +45,11 @@
 <body>
   <main class="page">
     <h1>Confirm</h1>
-    <p>Здесь будет обрабатываться запрос `confirm`.</p>
-    <p>Сейчас скрипт прочитает параметр <code>id</code> и вызовет webhook Bitrix24.</p>
+    <p>Здесь будет обрабатываться запрос <code>confirm</code>.</p>
+    <p>Одна и та же логика теперь доступна и по URL <code>/confirm?id=...</code>.</p>
     <code id="request-info">ID: —</code>
     <p id="status-message" style="margin-top:1rem; color:#5d5d5d; font-size:0.95rem;">Ожидание запроса...</p>
   </main>
-  <script src="confirm.js"></script>
+  <script src="/confirm.js"></script>
 </body>
 </html>

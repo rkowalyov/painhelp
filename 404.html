@@ -43,7 +43,7 @@
 
     const isConfirm = path.replace(/\/$/, '') === '/confirm';
     if (isConfirm) {
-      const redirectUrl = '/confirm/' + window.location.search;
+      const redirectUrl = '/confirm.html' + window.location.search;
       document.getElementById('message').textContent = 'Перенаправляем на ' + redirectUrl;
       window.location.replace(redirectUrl);
     } else {
