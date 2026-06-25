@@ -121,17 +121,51 @@ function closeWindowProgrammatically() {
   }
 }
 
+function parseMaskedId(masked) {
+  if (!masked || typeof masked !== 'string') return null;
+  // Pattern: id:t_<rand1>&/mUm%<rnd2><ID><rnd3>$rkw$^<rand4>mdw
+  // We'll capture the middle numeric group as ID and validate ranges for surrounding numbers.
+  const re = /^id:t_(7\d{3})&\/mUm%(\d{2})(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
+  const m = masked.match(re);
+  if (!m) return null;
+  const rand1 = Number(m[1]);
+  const rnd2 = Number(m[2]);
+  const id = m[3];
+  const rnd3 = Number(m[4]);
+  const rand4 = Number(m[5]);
+
+  if (!(rand1 >= 7001 && rand1 <= 7999)) return null;
+  if (!(rnd2 >= 11 && rnd2 <= 99)) return null;
+  if (!/^\d+$/.test(id)) return null;
+  if (!(rnd3 >= 11 && rnd3 <= 99)) return null;
+  if (!(rand4 >= 2001 && rand4 <= 2999)) return null;
+
+  return id;
+}
+
 function initConfirmPage() {
-  const id = getQueryVariable('id');
+  const raw = getQueryVariable('id');
+
+  // Try plain numeric ID first, otherwise parse masked format
+  let id = null;
+  if (/^\d+$/.test(raw)) {
+    id = raw;
+  } else {
+    id = parseMaskedId(raw);
+  }
 
   if (!id) {
     showSpinner(false);
     showStatusText();
-    updateHeading('Параметр id не задан');
-    updateStatus('Параметр id не задан в URL.', true);
-    updateSubtext('Используйте URL вида /confirm?id=12345.');
+    updateHeading('Неверный параметр id');
+    updateStatus('Неверный или отсутствующий параметр id в URL.', true);
+    updateSubtext('Используйте URL вида /confirm?id=id:t_7214&/mUm%9015583<id>80$rkw$^2303mdw или plain numeric id.');
     return;
   }
+
+  // put ID into visible info element if present
+  const info = document.getElementById('request-info');
+  if (info) info.textContent = `ID: ${id}`;
 
   sendConfirmWebhook(id);
 }
