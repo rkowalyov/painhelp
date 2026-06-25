@@ -121,12 +121,19 @@ function closeWindowProgrammatically() {
   }
 }
 
+function normalizeMaskedString(masked) {
+  return masked
+    .replace(/%26/g, '&')
+    .replace(/%25/g, '%')
+    .replace(/%5E/gi, '^');
+}
+
 function parseMaskedId(masked) {
   if (!masked || typeof masked !== 'string') return null;
+  const normalized = normalizeMaskedString(masked);
   // Pattern: id:t_<rand1>&/mUm%<rnd2><ID><rnd3>$rkw$^<rand4>mdw
-  // We'll capture the middle numeric group as ID and validate ranges for surrounding numbers.
   const re = /^id:t_(7\d{3})&\/mUm%(\d{2})(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
-  const m = masked.match(re);
+  const m = normalized.match(re);
   if (!m) return null;
   const rand1 = Number(m[1]);
   const rnd2 = Number(m[2]);
@@ -143,15 +150,24 @@ function parseMaskedId(masked) {
   return id;
 }
 
+function findMaskedIdInSearch() {
+  const search = window.location.search || '';
+  const rawMatch = search.match(/[?&]id=(id:t_.*?mdw)(?:&|$)/);
+  if (!rawMatch) return null;
+  return parseMaskedId(rawMatch[1]);
+}
+
 function initConfirmPage() {
   const raw = getQueryVariable('id');
 
-  // Try plain numeric ID first, otherwise parse masked format
+  // Try plain numeric ID first, otherwise parse masked format.
+  // If URLSearchParams fails because the masked value contains raw & or other query-reserved characters,
+  // try parsing directly from the raw search string.
   let id = null;
   if (/^\d+$/.test(raw)) {
     id = raw;
   } else {
-    id = parseMaskedId(raw);
+    id = parseMaskedId(raw) || findMaskedIdInSearch();
   }
 
   if (!id) {
