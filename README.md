@@ -217,3 +217,36 @@ const WEBHOOK_URL = 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.l
 
 ВНИМАНИЕ! Обнаружено,что - При каждом открытии этого раздела фомрмируется новый токен авторизации.
 Надо бы почитать описание...
+
+
+Proxy server (to protect Bitrix webhook)
+--------------------------------------
+Чтобы не хранить и не показывать Bitrix webhook в клиентском коде, в репозитории добавлен простой Express-прокси.
+
+Краткая инструкция (локально):
+
+1. Скопируйте `.env.example` в `.env` и заполните `BITRIX_WEBHOOK`.
+
+2. Установите зависимости и запустите сервер:
+
+```bash
+cd painhelp
+npm install
+npm run dev   # или `npm start`
+```
+
+3. Запустите статический сервер для фронтенда (в другом терминале):
+
+```bash
+python -m http.server 8000
+# Откройте http://localhost:8000/1st-pain-quiz-styled.html
+```
+
+Фронтенд теперь отправляет данные на `/api/lead` (прокси), который использует `BITRIX_WEBHOOK` из окружения для пересылки данных в Bitrix.
+
+Security notes:
+- Не храните реальные секреты в репозитории. Добавьте `.env` в `.gitignore`.
+- Используйте `ALLOWED_ORIGINS` в `.env` чтобы ограничить CORS.
+- В production храните секреты в провайдере (Vercel/Netlify/AWS/GCP) как защищённые переменные.
+- Добавьте rate-limiting и мониторинг для обнаружения аномалий.
+

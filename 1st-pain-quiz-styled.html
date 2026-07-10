@@ -676,16 +676,8 @@ function showResult(r) {
 
 /* ===================== CRM ===================== */
 async function sendToCRM(r) {
-  const webhook = scenario.meta.webhook;
   const f = scenario.crm_fields;
   const source = scenario.meta.source_label || "quiz";
-
-  if (!webhook || webhook.includes("ВАШ-ДОМЕН")) {
-    console.warn("[QUIZ] Demo mode — webhook not configured");
-    return;
-  }
-
-  const url = webhook.replace(/\/+$/, "").replace(/\.json$/, "") + ".json";
 
   const fields = {
     TITLE: source,
@@ -705,32 +697,34 @@ async function sendToCRM(r) {
   if (f.source)           fields[f.source]           = source;
   if (f.quiz_date)        fields[f.quiz_date]        = new Date().toISOString();
 
-  console.log("[QUIZ] Sending to:", url);
-  console.log("[QUIZ] Payload:", JSON.stringify({ fields }, null, 2));
+  console.log("[QUIZ] Payload (to proxy):", JSON.stringify({ fields }, null, 2));
 
   try {
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const resp = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields })
     });
     const data = await resp.json();
-    console.log("[QUIZ] Bitrix24 response:", JSON.stringify(data));
+    console.log('[QUIZ] Proxy response:', JSON.stringify(data));
 
-    const el = document.getElementById("crmStatus");
+    const el = document.getElementById('crmStatus');
     if (el) {
       if (data.result) {
-        el.textContent = "Лид создан. ID: " + data.result;
-        el.className = "crm-status ok";
+        el.textContent = 'Лид создан. ID: ' + data.result;
+        el.className = 'crm-status ok';
+      } else if (data.error) {
+        el.textContent = 'Ошибка CRM: ' + JSON.stringify(data.error_description || data.error);
+        el.className = 'crm-status err';
       } else {
-        el.textContent = "Ошибка CRM: " + JSON.stringify(data.error_description || data);
-        el.className = "crm-status err";
+        el.textContent = 'Неизвестный ответ от сервера';
+        el.className = 'crm-status err';
       }
     }
   } catch (e) {
-    console.error("[QUIZ] Fetch error:", e);
-    const el = document.getElementById("crmStatus");
-    if (el) { el.textContent = "Ошибка сети: " + e.message; el.className = "crm-status err"; }
+    console.error('[QUIZ] Proxy fetch error:', e);
+    const el = document.getElementById('crmStatus');
+    if (el) { el.textContent = 'Ошибка сети: ' + e.message; el.className = 'crm-status err'; }
   }
 }
 
