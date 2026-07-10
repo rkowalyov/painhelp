@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: painhelp
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: BITRIX_WEBHOOK
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+        value: https://yourdomain.com
+    autoDeploy: true
+    region: oregon

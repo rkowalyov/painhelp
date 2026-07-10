@@ -223,7 +223,13 @@ Proxy server (to protect Bitrix webhook)
 --------------------------------------
 Чтобы не хранить и не показывать Bitrix webhook в клиентском коде, в репозитории добавлен простой Express-прокси.
 
-Краткая инструкция (локально):
+На сервере этот прокси выполняет две задачи:
+- отдаёт статические файлы фронтенда из репозитория;
+- принимает POST `/api/lead` и пересылает данные в Bitrix с помощью `BITRIX_WEBHOOK` из окружения.
+
+Это значит, что в продакшене работоспособность не зависит от вашей локальной машины: достаточно развернуть `server.js` на хостинге и задать секрет как переменную окружения.
+
+Local development (optional):
 
 1. Скопируйте `.env.example` в `.env` и заполните `BITRIX_WEBHOOK`.
 
@@ -235,18 +241,63 @@ npm install
 npm run dev   # или `npm start`
 ```
 
-3. Запустите статический сервер для фронтенда (в другом терминале):
+3. Откройте в браузере:
 
 ```bash
-python -m http.server 8000
-# Откройте http://localhost:8000/1st-pain-quiz-styled.html
+http://localhost:3000/1st-pain-quiz-styled.html
 ```
 
-Фронтенд теперь отправляет данные на `/api/lead` (прокси), который использует `BITRIX_WEBHOOK` из окружения для пересылки данных в Bitrix.
+В этом режиме один процесс обслуживает и фронтенд, и `/api/lead`.
+
+Production deployment:
+
+- Разверните этот репозиторий на любом Node.js-хостинге (Render, Railway, Heroku, DigitalOcean App Platform и т.п.).
+- Установите в хостинге переменную окружения `BITRIX_WEBHOOK`.
+- Не коммитьте реальные ключи в репозиторий.
+
+Примеры развёртывания:
+
+1) Heroku
+
+- Создайте приложение.
+- В разделе Config Vars добавьте `BITRIX_WEBHOOK`.
+- Залейте в Heroku репозиторий. Процесс запустит `Procfile`.
+
+2) Docker
+
+```bash
+cd painhelp
+docker build -t painhelp-proxy .
+docker run -d -p 3000:3000 \
+  -e BITRIX_WEBHOOK="https://interpain.bitrix24.ru/rest/1/YOUR_KEY/crm.lead.add" \
+  -e ALLOWED_ORIGINS="https://yourdomain.com" \
+  painhelp-proxy
+```
+
+3) Render
+
+Если вы хотите deploy без дополнительных настроек, Render поддерживает `render.yaml` в корне репозитория.
+
+- Загрузите репозиторий на Render.
+- В разделе Environment → Environment Variables добавьте `BITRIX_WEBHOOK`.
+- При необходимости установите `ALLOWED_ORIGINS`.
+- Render автоматически запустит `npm install` и `npm start`.
+
+4) Vercel (самый простой)
+
+- Установите Vercel CLI: `npm i -g vercel`.
+- В корне репозитория запустите `vercel`.
+- В настройках проекта на Vercel добавьте `BITRIX_WEBHOOK`.
+
+Vercel автоматически развернёт статические страницы и API-функцию `/api/lead`, поэтому никаких дополнительных серверов запускать не нужно.
+
+Важное замечание: если вы используете Vercel, удалите локальный `server.js` из ветки или не используйте его, потому что `api/lead.js` берёт на себя прокси.
+
+Важно: в production фронтенд и прокси должны работать вместе на одном хосте, чтобы браузер мог обращаться к `/api/lead` без дополнительных настроек CORS.
 
 Security notes:
-- Не храните реальные секреты в репозитории. Добавьте `.env` в `.gitignore`.
-- Используйте `ALLOWED_ORIGINS` в `.env` чтобы ограничить CORS.
-- В production храните секреты в провайдере (Vercel/Netlify/AWS/GCP) как защищённые переменные.
-- Добавьте rate-limiting и мониторинг для обнаружения аномалий.
+- `.env` должен оставаться локальным и не попадать в git.
+- В production храните `BITRIX_WEBHOOK` в защищённых переменных окружения провайдера.
+- Используйте `ALLOWED_ORIGINS` для ограничения CORS.
+- Rate limit уже включён в proxy, но для продакшена стоит добавить логирование и мониторинг.
 
