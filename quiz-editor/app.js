@@ -130,7 +130,6 @@ const DEFAULT_JSON = {
     subtitle: "Ответьте на 5 вопросов и получите понимание, стоит ли обращаться к специалисту",
     trust_badges: ["Без регистрации", "Анонимно", "Основано на опыте врачей"],
     cta_start: "Пройти тест",
-    webhook: "",
     source_label: "Тест Квиз 26_05_07",
     email_title: "Мы почти готовы показать результат",
     email_subtitle: "Оставьте email, чтобы получить результат и рекомендации и не потерять их",
@@ -313,7 +312,6 @@ function loadFromObject(data) {
   setVal('meta-subtitle', m.subtitle || '');
   setVal('meta-cta_start', m.cta_start || '');
   setVal('meta-source_label', m.source_label || '');
-  setVal('meta-webhook', m.webhook || '');
   setVal('meta-email_title', m.email_title || '');
   setVal('meta-email_subtitle', m.email_subtitle || '');
   setVal('meta-email_fear', m.email_fear || '');
@@ -739,7 +737,6 @@ function buildJson() {
       subtitle:       gv('meta-subtitle'),
       trust_badges:   gv('meta-trust_badges').split(',').map(s => s.trim()).filter(Boolean),
       cta_start:      gv('meta-cta_start'),
-      webhook:        gv('meta-webhook'),
       source_label:   gv('meta-source_label'),
       email_title:    gv('meta-email_title'),
       email_subtitle: gv('meta-email_subtitle'),
