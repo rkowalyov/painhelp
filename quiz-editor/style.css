@@ -420,13 +420,9 @@ button { cursor: pointer; background: none; border: none; }
 
 /* ===== SCORING ===== */
 .scoring-grid { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
-  auto-rows: max-content;
-}
-@media (max-width: 700px) {
-  .scoring-grid { grid-template-columns: 1fr; }
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 .scoring-card {
   background: var(--color-surface);
