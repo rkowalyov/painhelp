@@ -469,10 +469,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     // Проверка режима редактирования
     const editMode = getQueryParam("edit");
     if (isTruthyParam(editMode)) {
-      // Сохранить JSON в sessionStorage и редирект на редактор
-      sessionStorage.setItem("quiz_editor_load", JSON.stringify(scenario));
+      // Сохранить JSON в localStorage и редирект на редактор
+      localStorage.setItem("quiz_editor_load", JSON.stringify(scenario));
       const quizName = getQueryParam(SCENARIO_QUERY_KEY) || "new";
-      window.location.href = `./quiz-editor/?load=${encodeURIComponent(quizName)}&edit=Y`;
+      window.location.href = `/quiz-editor/?load=${encodeURIComponent(quizName)}&edit=Y`;
       return;
     }
     

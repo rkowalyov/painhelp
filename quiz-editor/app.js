@@ -11,13 +11,13 @@ function getLoadParam() {
 
 function loadFromSessionStorage() {
   try {
-    const data = sessionStorage.getItem('quiz_editor_load');
+    const data = localStorage.getItem('quiz_editor_load');
     if (data) {
-      sessionStorage.removeItem('quiz_editor_load');
+      localStorage.removeItem('quiz_editor_load');
       return JSON.parse(data);
     }
   } catch (e) {
-    console.error('[EDITOR] Failed to load from sessionStorage:', e);
+    console.error('[EDITOR] Failed to load from localStorage:', e);
   }
   return null;
 }
