@@ -89,10 +89,12 @@
 /* ===== BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { 
-  overflow: hidden;
   scrollbar-width: none; /* Firefox */
+  overflow-y: scroll; /* Reserve space for scrollbar */
 }
-html::-webkit-scrollbar { width: 0; height: 0; } /* Chrome/Safari */
+html::-webkit-scrollbar { width: 8px; height: 8px; } /* Chrome/Safari */
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb { background: transparent; }
 
 body {
   font-family: var(--font-body);
@@ -102,7 +104,7 @@ body {
   min-height: 100dvh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* ===== LOGIN SCREEN ===== */
@@ -179,7 +181,7 @@ body {
 .editor-container {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  min-height: 100dvh;
   overflow: hidden;
 }
 input, button, textarea, select { font: inherit; color: inherit; }
