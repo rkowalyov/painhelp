@@ -5,13 +5,6 @@
 
 // ---------- AUTHENTICATION ----------
 const AUTH_TOKEN_KEY = 'quiz_editor_auth_token';
-const AUTH_TIMEOUT = 24 * 60 * 60 * 1000; // 24 часов
-
-// Список авторизованных пользователей
-const AUTHORIZED_USERS = [
-  { username: 'user001', password: 'pass001' },
-  { username: 'user002', password: 'pass002' }
-];
 
 function initAuthScreen() {
   const loginScreen = document.getElementById('loginScreen');
@@ -20,60 +13,68 @@ function initAuthScreen() {
   const loginUsername = document.getElementById('loginUsername');
   const loginPassword = document.getElementById('loginPassword');
   const loginError = document.getElementById('loginError');
+  const submitBtn = loginForm.querySelector('button[type="submit"]');
 
   // Проверить, авторизован ли пользователь
   const authToken = localStorage.getItem(AUTH_TOKEN_KEY);
   if (authToken) {
-    const tokenData = JSON.parse(authToken);
-    if (Date.now() < tokenData.expires) {
-      // Токен еще валиден - авторизация успешна
-      loginScreen.style.display = 'none';
-      editorContainer.style.display = 'block';
-      initializeEditor();
-      return true;
-    } else {
-      // Токен истек
-      localStorage.removeItem(AUTH_TOKEN_KEY);
-    }
+    try {
+      const tokenData = JSON.parse(authToken);
+      if (Date.now() < tokenData.expires) {
+        loginScreen.style.display = 'none';
+        editorContainer.style.display = 'block';
+        initializeEditor();
+        return true;
+      }
+    } catch (e) {}
+    localStorage.removeItem(AUTH_TOKEN_KEY);
   }
 
   // Показать экран входа
   loginScreen.style.display = 'flex';
   editorContainer.style.display = 'none';
 
-  loginForm.addEventListener('submit', (e) => {
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const username = loginUsername.value.trim();
     const password = loginPassword.value;
 
-    // Проверить учетные данные
-    const user = AUTHORIZED_USERS.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      // Успешная авторизация
-      const tokenData = {
-        username: username,
-        timestamp: Date.now(),
-        expires: Date.now() + AUTH_TIMEOUT
-      };
-      localStorage.setItem(AUTH_TOKEN_KEY, JSON.stringify(tokenData));
-      
-      // Скрыть логин, показать редактор
-      loginScreen.style.display = 'none';
-      editorContainer.style.display = 'block';
-      
-      // Очистить форму
-      loginForm.reset();
-      loginError.classList.remove('show');
-      
-      // Инициализировать редактор
-      initializeEditor();
-    } else {
-      // Неверные учетные данные
-      loginError.textContent = 'Неверный логин или пароль';
+    loginError.classList.remove('show');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Проверка...';
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        // Успешная авторизация — сохраняем токен
+        localStorage.setItem(AUTH_TOKEN_KEY, JSON.stringify({
+          token: data.token,
+          username: data.username,
+          expires: data.expires
+        }));
+        loginScreen.style.display = 'none';
+        editorContainer.style.display = 'block';
+        loginForm.reset();
+        initializeEditor();
+      } else {
+        loginError.textContent = data.error || 'Неверный логин или пароль';
+        loginError.classList.add('show');
+        loginPassword.value = '';
+        loginPassword.focus();
+      }
+    } catch (err) {
+      loginError.textContent = 'Ошибка соединения с сервером';
       loginError.classList.add('show');
-      loginPassword.value = '';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Войти';
     }
   });
 

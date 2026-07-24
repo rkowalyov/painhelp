@@ -7,6 +7,7 @@
     { "src": "quiz-editor/**/*", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "^/api/auth/?$", "dest": "/api/auth.js" },
     { "src": "^/api/lead/?$", "dest": "/api/lead.js" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/quiz-editor/?$", "dest": "/quiz-editor/index.html" },
