@@ -158,6 +158,59 @@ document.getElementById('fileInput').addEventListener('change', e => {
   e.target.value = '';
 });
 
+// Функция для рендеринга CTA кнопок (должна быть ДО loadFromObject)
+function renderCtaButtons(level, count, existingCta) {
+  const container = document.getElementById(`cta-${level}-container`);
+  if (!container) return;
+  
+  // Установить активную кнопку количества
+  const card = document.querySelector(`.scoring-card[data-level="${level}"]`);
+  if (card) {
+    card.querySelectorAll('.btn-count').forEach(btn => btn.classList.remove('active'));
+    card.querySelector(`.btn-count[data-count="${count}"]`)?.classList.add('active');
+    card.dataset.ctaCount = count;
+  }
+  
+  // Очистить контейнер
+  container.innerHTML = '';
+  
+  // Рендерить поля для каждой кнопки
+  for (let i = 0; i < count; i++) {
+    const cta = existingCta?.[i];
+    const text = (typeof cta === 'object' && cta?.text) ? cta.text : '';
+    const url = (typeof cta === 'object' && cta?.url) ? cta.url : '';
+    
+    const row = document.createElement('div');
+    row.className = 'cta-button-row';
+    row.dataset.ctaIndex = i;
+    row.innerHTML = `
+      <div class="field-group">
+        <label class="field-label">Текст кнопки ${i + 1}</label>
+        <input 
+          class="field-input cta-text" 
+          type="text" 
+          placeholder="Например: Читать статью"
+          value="${text}"
+          data-level="${level}"
+          data-index="${i}"
+        />
+      </div>
+      <div class="field-group">
+        <label class="field-label">URL действия ${i + 1}</label>
+        <input 
+          class="field-input cta-url" 
+          type="url" 
+          placeholder="https://example.com"
+          value="${url}"
+          data-level="${level}"
+          data-index="${i}"
+        />
+      </div>
+    `;
+    container.appendChild(row);
+  }
+}
+
 function loadFromObject(data) {
   // Meta
   const m = data.meta || {};
@@ -214,58 +267,6 @@ function loadFromObject(data) {
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (el) el.value = val;
-}
-
-function renderCtaButtons(level, count, existingCta) {
-  const container = document.getElementById(`cta-${level}-container`);
-  if (!container) return;
-  
-  // Установить активную кнопку количества
-  const card = document.querySelector(`.scoring-card[data-level="${level}"]`);
-  if (card) {
-    card.querySelectorAll('.btn-count').forEach(btn => btn.classList.remove('active'));
-    card.querySelector(`.btn-count[data-count="${count}"]`)?.classList.add('active');
-    card.dataset.ctaCount = count;
-  }
-  
-  // Очистить контейнер
-  container.innerHTML = '';
-  
-  // Рендерить поля для каждой кнопки
-  for (let i = 0; i < count; i++) {
-    const cta = existingCta?.[i];
-    const text = (typeof cta === 'object' && cta?.text) ? cta.text : '';
-    const url = (typeof cta === 'object' && cta?.url) ? cta.url : '';
-    
-    const row = document.createElement('div');
-    row.className = 'cta-button-row';
-    row.dataset.ctaIndex = i;
-    row.innerHTML = `
-      <div class="field-group">
-        <label class="field-label">Текст кнопки ${i + 1}</label>
-        <input 
-          class="field-input cta-text" 
-          type="text" 
-          placeholder="Например: Читать статью"
-          value="${text}"
-          data-level="${level}"
-          data-index="${i}"
-        />
-      </div>
-      <div class="field-group">
-        <label class="field-label">URL действия ${i + 1}</label>
-        <input 
-          class="field-input cta-url" 
-          type="url" 
-          placeholder="https://example.com"
-          value="${url}"
-          data-level="${level}"
-          data-index="${i}"
-        />
-      </div>
-    `;
-    container.appendChild(row);
-  }
 }
 
 // ---------- QUESTIONS RENDER ----------
