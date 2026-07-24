@@ -28,7 +28,7 @@ function initAuthScreen() {
     if (Date.now() < tokenData.expires) {
       // Токен еще валиден - авторизация успешна
       loginScreen.style.display = 'none';
-      editorContainer.style.display = 'contents';
+      editorContainer.style.display = 'block';
       initializeEditor();
       return true;
     } else {
@@ -61,7 +61,7 @@ function initAuthScreen() {
       
       // Скрыть логин, показать редактор
       loginScreen.style.display = 'none';
-      editorContainer.style.display = 'contents';
+      editorContainer.style.display = 'block';
       
       // Очистить форму
       loginForm.reset();

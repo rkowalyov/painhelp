@@ -171,7 +171,7 @@ body {
 }
 
 .editor-container {
-  display: contents;
+  display: block;
 }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: none; }
