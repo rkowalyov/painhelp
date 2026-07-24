@@ -465,6 +465,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch(SCENARIO_URL);
     if (!res.ok) throw new Error("HTTP " + res.status);
     scenario = await res.json();
+    
+    // Проверка режима редактирования
+    const editMode = getQueryParam("edit");
+    if (isTruthyParam(editMode)) {
+      // Сохранить JSON в sessionStorage и редирект на редактор
+      sessionStorage.setItem("quiz_editor_load", JSON.stringify(scenario));
+      const quizName = getQueryParam(SCENARIO_QUERY_KEY) || "new";
+      window.location.href = `./quiz-editor/?load=${encodeURIComponent(quizName)}&edit=Y`;
+      return;
+    }
+    
     buildHero();
     if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
       startQuiz();

@@ -3,106 +3,23 @@
    Редактор JSON-квизов под Битрикс24
    ============================================================ */
 
-// ---------- AUTHENTICATION ----------
-function getEditParam() {
+// ---------- LOAD FROM EXTERNAL SOURCE ----------
+function getLoadParam() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('edit');
+  return params.get('load');
 }
 
-function getAuthToken() {
-  return sessionStorage.getItem('quiz_editor_token');
-}
-
-function setAuthToken(token) {
-  sessionStorage.setItem('quiz_editor_token', token);
-}
-
-async function authenticateUser(username, password) {
+function loadFromSessionStorage() {
   try {
-    const response = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      return { ok: false, error: error.error || 'Authentication failed' };
+    const data = sessionStorage.getItem('quiz_editor_load');
+    if (data) {
+      sessionStorage.removeItem('quiz_editor_load');
+      return JSON.parse(data);
     }
-
-    const data = await response.json();
-    setAuthToken(data.token);
-    return { ok: true, message: data.message };
-  } catch (err) {
-    return { ok: false, error: err.message };
+  } catch (e) {
+    console.error('[EDITOR] Failed to load from sessionStorage:', e);
   }
-}
-
-function showAuthModal() {
-  const modal = document.getElementById('authModal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function hideAuthModal() {
-  const modal = document.getElementById('authModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function initAuthHandler() {
-  const editParam = getEditParam();
-  
-  // Если нет параметра ?edit=Y, просто показываем редактор
-  if (!editParam || editParam.toLowerCase() !== 'y') {
-    return;
-  }
-
-  // Если уже аутентифицирован, ничего не делаем
-  if (getAuthToken()) {
-    return;
-  }
-
-  // Показываем модал аутентификации
-  showAuthModal();
-
-  const loginBtn = document.getElementById('authLoginBtn');
-  const usernameInput = document.getElementById('authUsername');
-  const passwordInput = document.getElementById('authPassword');
-  const errorMsg = document.getElementById('authError');
-
-  if (!loginBtn) return;
-
-  loginBtn.addEventListener('click', async () => {
-    const username = usernameInput?.value.trim();
-    const password = passwordInput?.value;
-
-    if (!username || !password) {
-      if (errorMsg) errorMsg.textContent = 'Заполните логин и пароль';
-      return;
-    }
-
-    loginBtn.disabled = true;
-    if (errorMsg) errorMsg.textContent = 'Проверка...';
-
-    const result = await authenticateUser(username, password);
-
-    if (result.ok) {
-      if (errorMsg) errorMsg.textContent = '';
-      hideAuthModal();
-      loginBtn.disabled = false;
-    } else {
-      if (errorMsg) errorMsg.textContent = result.error;
-      loginBtn.disabled = false;
-    }
-  });
-
-  // Вход по Enter
-  [usernameInput, passwordInput].forEach(input => {
-    if (input) {
-      input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') loginBtn.click();
-      });
-    }
-  });
+  return null;
 }
 
 // ---------- STATE ----------
@@ -819,12 +736,17 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   }
 });
 
-// ---------- INIT: load from storage or default ----------
-const savedData = loadFromStorage();
-loadFromObject(savedData || DEFAULT_JSON);
+// ---------- INIT: load from sessionStorage or localStorage or default ----------
+// Сначала проверяем sessionStorage (загрузка из quiz-handler)
+let loadedData = loadFromSessionStorage();
 
-// Инициализация аутентификации (если ?edit=Y)
-initAuthHandler();
+// Если нет, пробуем localStorage
+if (!loadedData) {
+  loadedData = loadFromStorage();
+}
+
+// Загружаем данные
+loadFromObject(loadedData || DEFAULT_JSON);
 
 // ============================================================
 // QUIZ PREVIEW ENGINE

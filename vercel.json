@@ -6,7 +6,6 @@
     { "src": "scenarios/*.json", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "^/api/auth/?$", "dest": "/api/auth.js" },
     { "src": "^/api/lead/?$", "dest": "/api/lead.js" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/$1" }
