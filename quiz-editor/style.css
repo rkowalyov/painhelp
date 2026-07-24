@@ -88,7 +88,12 @@
 
 /* ===== BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
 body {
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -97,6 +102,7 @@ body {
   min-height: 100dvh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
 /* ===== LOGIN SCREEN ===== */
@@ -171,7 +177,10 @@ body {
 }
 
 .editor-container {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
 }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: none; }
@@ -235,8 +244,12 @@ button { cursor: pointer; background: none; border: none; }
 
 /* ===== MAIN LAYOUT ===== */
 .app-main {
-  max-width: 860px; margin: 0 auto;
+  flex: 1;
+  overflow-y: auto;
+  max-width: 860px; 
+  margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-12);
+  width: 100%;
 }
 
 /* ===== TABS ===== */
