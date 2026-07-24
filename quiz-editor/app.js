@@ -3,6 +3,100 @@
    Редактор JSON-квизов под Битрикс24
    ============================================================ */
 
+// ---------- AUTHENTICATION ----------
+const AUTH_TOKEN_KEY = 'quiz_editor_auth_token';
+const AUTH_TIMEOUT = 24 * 60 * 60 * 1000; // 24 часов
+
+// Список авторизованных пользователей
+const AUTHORIZED_USERS = [
+  { username: 'user001', password: 'pass001' },
+  { username: 'user002', password: 'pass002' }
+];
+
+function initAuthScreen() {
+  const loginScreen = document.getElementById('loginScreen');
+  const editorContainer = document.getElementById('editorContainer');
+  const loginForm = document.getElementById('loginForm');
+  const loginUsername = document.getElementById('loginUsername');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginError = document.getElementById('loginError');
+
+  // Проверить, авторизован ли пользователь
+  const authToken = localStorage.getItem(AUTH_TOKEN_KEY);
+  if (authToken) {
+    const tokenData = JSON.parse(authToken);
+    if (Date.now() < tokenData.expires) {
+      // Токен еще валиден - авторизация успешна
+      loginScreen.style.display = 'none';
+      editorContainer.style.display = 'contents';
+      initializeEditor();
+      return true;
+    } else {
+      // Токен истек
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+    }
+  }
+
+  // Показать экран входа
+  loginScreen.style.display = 'flex';
+  editorContainer.style.display = 'none';
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value;
+
+    // Проверить учетные данные
+    const user = AUTHORIZED_USERS.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+      // Успешная авторизация
+      const tokenData = {
+        username: username,
+        timestamp: Date.now(),
+        expires: Date.now() + AUTH_TIMEOUT
+      };
+      localStorage.setItem(AUTH_TOKEN_KEY, JSON.stringify(tokenData));
+      
+      // Скрыть логин, показать редактор
+      loginScreen.style.display = 'none';
+      editorContainer.style.display = 'contents';
+      
+      // Очистить форму
+      loginForm.reset();
+      loginError.classList.remove('show');
+      
+      // Инициализировать редактор
+      initializeEditor();
+    } else {
+      // Неверные учетные данные
+      loginError.textContent = 'Неверный логин или пароль';
+      loginError.classList.add('show');
+      loginPassword.value = '';
+    }
+  });
+
+  return false;
+}
+
+function initializeEditor() {
+  // Эта функция вызывается после успешной авторизации
+  // Загружаем данные квиза
+  let loadedData = null;
+  if (getLoadParam()) {
+    console.log("[EDITOR] Loading from external source");
+    loadedData = loadFromSessionStorage();
+  } else {
+    loadedData = loadFromStorage();
+    console.log("[EDITOR] Loaded from localStorage:", !!loadedData);
+  }
+
+  // Загружаем данные
+  console.log("[EDITOR] Using data:", loadedData ? "external/saved" : "default");
+  loadFromObject(loadedData || DEFAULT_JSON);
+}
+
 // ---------- LOAD FROM EXTERNAL SOURCE ----------
 function getLoadParam() {
   const params = new URLSearchParams(window.location.search);
@@ -838,9 +932,8 @@ if (!loadedData) {
   console.log("[EDITOR] Loaded from localStorage:", !!loadedData);
 }
 
-// Загружаем данные
-console.log("[EDITOR] Using data:", loadedData ? "external/saved" : "default");
-loadFromObject(loadedData || DEFAULT_JSON);
+// ===== ИНИЦИАЛИЗАЦИЯ АВТОРИЗАЦИИ =====
+initAuthScreen();
 
 // ============================================================
 // QUIZ PREVIEW ENGINE

@@ -9,6 +9,55 @@
 </head>
 <body>
 
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-container">
+    <div class="login-header">
+      <svg width="48" height="48" viewBox="0 0 32 32" fill="none" aria-label="Quiz Editor">
+        <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
+        <rect x="7" y="9" width="18" height="3" rx="1.5" fill="white"/>
+        <rect x="7" y="14.5" width="13" height="3" rx="1.5" fill="white" opacity="0.7"/>
+        <rect x="7" y="20" width="10" height="3" rx="1.5" fill="white" opacity="0.5"/>
+      </svg>
+      <h1 class="login-title">Quiz Editor</h1>
+      <p class="login-subtitle">Вход в редактор квизов</p>
+    </div>
+    
+    <form id="loginForm" class="login-form">
+      <div class="field-group">
+        <label class="field-label" for="loginUsername">Логин</label>
+        <input 
+          id="loginUsername" 
+          class="field-input" 
+          type="text" 
+          placeholder="Введите логин"
+          autocomplete="username"
+          required
+        />
+      </div>
+      
+      <div class="field-group">
+        <label class="field-label" for="loginPassword">Пароль</label>
+        <input 
+          id="loginPassword" 
+          class="field-input" 
+          type="password" 
+          placeholder="Введите пароль"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+      
+      <div id="loginError" class="login-error"></div>
+      
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== EDITOR (hidden by default) ===== -->
+<div id="editorContainer" class="editor-container" style="display: none;">
+
 <header class="app-header">
   <div class="header-inner">
     <div class="logo">
@@ -286,6 +335,8 @@
     <pre class="json-preview" id="jsonPreview"></pre>
   </section>
 </main>
+
+</div><!-- end editorContainer -->
 
 <!-- QUESTION TEMPLATE (hidden) -->
 <template id="question-template">
