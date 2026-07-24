@@ -421,6 +421,7 @@ button { cursor: pointer; background: none; border: none; }
   display: grid; 
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-4);
+  auto-rows: max-content;
 }
 @media (max-width: 700px) {
   .scoring-grid { grid-template-columns: 1fr; }
@@ -429,7 +430,9 @@ button { cursor: pointer; background: none; border: none; }
   background: var(--color-surface);
   border-radius: var(--radius-xl);
   padding: var(--space-5);
-  display: flex; flex-direction: column; gap: var(--space-4);
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--space-4);
   border: 1.5px solid var(--color-border);
 }
 .scoring-card.low { border-color: var(--color-low-border); background: var(--color-low-bg); }
