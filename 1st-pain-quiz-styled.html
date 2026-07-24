@@ -654,11 +654,13 @@ function showResult(r) {
     ? `<div class="result-flags">${flags.map(f => `<span class="flag-chip">${f}</span>`).join("")}</div>`
     : "";
 
-  const ctaHTML = (s.cta || []).map((c, i) =>
-    i === 0
-      ? `<button class="btn-primary">${c}</button>`
-      : `<button class="btn-secondary">${c}</button>`
-  ).join("");
+  const ctaHTML = (s.cta || []).map((c, i) => {
+    const text = typeof c === 'string' ? c : c.text;
+    const url = (typeof c === 'object' && c.url) ? c.url : '#';
+    return i === 0
+      ? `<button class="btn-primary" onclick="window.location.href='${url}'">${text}</button>`
+      : `<button class="btn-secondary" onclick="window.location.href='${url}'">${text}</button>`;
+  }).join("");
 
   document.getElementById("screen-result").innerHTML = `
     <span class="result-badge ${r.category}">${labels[r.category]}</span>
