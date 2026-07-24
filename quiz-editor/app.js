@@ -95,9 +95,9 @@ const DEFAULT_JSON = {
     }
   ],
   scoring: {
-    low:    { max: 3,  title: "Серьёзных признаков не выявлено", text: "Судя по вашим ответам, боль пока не выглядит хронической.", cta: ["Читать полезные материалы","Узнать больше о боли"] },
-    medium: { max: 7,  title: "Боль требует внимания", text: "Некоторые ответы могут указывать на развитие хронической боли.", cta: ["Получить консультацию","Изучить методы лечения"] },
-    high:   { max: 99, title: "Рекомендуем обратиться к специалисту", text: "Ваши ответы указывают на высокую вероятность хронической боли.", cta: ["Найти клинику","Записаться на консультацию"] }
+    low:    { max: 3,  title: "Серьёзных признаков не выявлено", text: "Судя по вашим ответам, боль пока не выглядит хронической.", cta: [{ text: "Читать полезные материалы", url: "" }, { text: "Узнать больше о боли", url: "" }] },
+    medium: { max: 7,  title: "Боль требует внимания", text: "Некоторые ответы могут указывать на развитие хронической боли.", cta: [{ text: "Получить консультацию", url: "" }, { text: "Изучить методы лечения", url: "" }] },
+    high:   { max: 99, title: "Рекомендуем обратиться к специалисту", text: "Ваши ответы указывают на высокую вероятность хронической боли.", cta: [{ text: "Найти клинику", url: "" }, { text: "Записаться на консультацию", url: "" }] }
   },
   crm_fields: {
     score: "UF_CRM_1777993552",
@@ -178,7 +178,16 @@ function loadFromObject(data) {
     setVal(`score-${lvl}-max`, sc.max ?? '');
     setVal(`score-${lvl}-title`, sc.title || '');
     setVal(`score-${lvl}-text`, sc.text || '');
-    setVal(`score-${lvl}-cta`, Array.isArray(sc.cta) ? sc.cta.join(', ') : (sc.cta || ''));
+    
+    // Обработать CTA: может быть массив объектов {text, url} или старый формат
+    let cta = sc.cta || [];
+    let ctaCount = 1;
+    if (Array.isArray(cta)) {
+      ctaCount = Math.min(Math.max(cta.length, 1), 3);
+    }
+    
+    // Рендерить CTA элементы
+    renderCtaButtons(lvl, ctaCount, cta);
   });
 
   // CRM fields
@@ -205,6 +214,58 @@ function loadFromObject(data) {
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (el) el.value = val;
+}
+
+function renderCtaButtons(level, count, existingCta) {
+  const container = document.getElementById(`cta-${level}-container`);
+  if (!container) return;
+  
+  // Установить активную кнопку количества
+  const card = document.querySelector(`.scoring-card[data-level="${level}"]`);
+  if (card) {
+    card.querySelectorAll('.btn-count').forEach(btn => btn.classList.remove('active'));
+    card.querySelector(`.btn-count[data-count="${count}"]`)?.classList.add('active');
+    card.dataset.ctaCount = count;
+  }
+  
+  // Очистить контейнер
+  container.innerHTML = '';
+  
+  // Рендерить поля для каждой кнопки
+  for (let i = 0; i < count; i++) {
+    const cta = existingCta?.[i];
+    const text = (typeof cta === 'object' && cta?.text) ? cta.text : '';
+    const url = (typeof cta === 'object' && cta?.url) ? cta.url : '';
+    
+    const row = document.createElement('div');
+    row.className = 'cta-button-row';
+    row.dataset.ctaIndex = i;
+    row.innerHTML = `
+      <div class="field-group">
+        <label class="field-label">Текст кнопки ${i + 1}</label>
+        <input 
+          class="field-input cta-text" 
+          type="text" 
+          placeholder="Например: Читать статью"
+          value="${text}"
+          data-level="${level}"
+          data-index="${i}"
+        />
+      </div>
+      <div class="field-group">
+        <label class="field-label">URL действия ${i + 1}</label>
+        <input 
+          class="field-input cta-url" 
+          type="url" 
+          placeholder="https://example.com"
+          value="${url}"
+          data-level="${level}"
+          data-index="${i}"
+        />
+      </div>
+    `;
+    container.appendChild(row);
+  }
 }
 
 // ---------- QUESTIONS RENDER ----------
@@ -561,7 +622,20 @@ function buildJson() {
 
   syncDomToState();
 
-  const parseCta = str => str.split(',').map(s => s.trim()).filter(Boolean);
+  const getCtaFromDom = (level) => {
+    const container = document.getElementById(`cta-${level}-container`);
+    if (!container) return [];
+    
+    const cta = [];
+    container.querySelectorAll('.cta-button-row').forEach(row => {
+      const text = row.querySelector('.cta-text')?.value?.trim() || '';
+      const url = row.querySelector('.cta-url')?.value?.trim() || '';
+      if (text || url) {
+        cta.push({ text, url });
+      }
+    });
+    return cta;
+  };
 
   const out = {
     meta: {
@@ -598,19 +672,19 @@ function buildJson() {
         max:   parseInt(gv('score-low-max')) || 0,
         title: gv('score-low-title'),
         text:  gv('score-low-text'),
-        cta:   parseCta(gv('score-low-cta'))
+        cta:   getCtaFromDom('low')
       },
       medium: {
         max:   parseInt(gv('score-medium-max')) || 0,
         title: gv('score-medium-title'),
         text:  gv('score-medium-text'),
-        cta:   parseCta(gv('score-medium-cta'))
+        cta:   getCtaFromDom('medium')
       },
       high: {
         max:   parseInt(gv('score-high-max')) || 99,
         title: gv('score-high-title'),
         text:  gv('score-high-text'),
-        cta:   parseCta(gv('score-high-cta'))
+        cta:   getCtaFromDom('high')
       }
     },
     crm_fields: {
@@ -722,7 +796,18 @@ function scheduleSave() {
 const mainEl = document.querySelector('.app-main');
 mainEl.addEventListener('input',  scheduleSave);
 mainEl.addEventListener('change', scheduleSave);
-mainEl.addEventListener('click',  scheduleSave);
+mainEl.addEventListener('click',  (e) => {
+  // Обработчик для кнопок количества CTA
+  if (e.target.classList.contains('btn-count')) {
+    const card = e.target.closest('.scoring-card');
+    if (card) {
+      const level = card.dataset.level;
+      const count = parseInt(e.target.dataset.count);
+      renderCtaButtons(level, count, []);
+    }
+  }
+  scheduleSave();
+});
 
 // Кнопка сброса
 document.getElementById('resetBtn').addEventListener('click', () => {

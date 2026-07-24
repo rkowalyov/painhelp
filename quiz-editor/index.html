@@ -117,7 +117,7 @@
       <p>Настройте три уровня результатов по сумме баллов</p>
     </div>
     <div class="scoring-grid">
-      <div class="scoring-card low">
+      <div class="scoring-card low" data-level="low">
         <div class="scoring-badge">Низкий</div>
         <div class="field-group">
           <label class="field-label">Макс. баллов (включительно)</label>
@@ -132,12 +132,18 @@
           <textarea class="field-input field-textarea" id="score-low-text" placeholder="Описание результата..."></textarea>
         </div>
         <div class="field-group">
-          <label class="field-label">CTA кнопки (через запятую)</label>
-          <input class="field-input" id="score-low-cta" type="text" placeholder="Читать полезные материалы, Узнать больше" />
+          <label class="field-label">CTA кнопки</label>
+          <div class="cta-button-count-selector">
+            <span class="count-label">Количество:</span>
+            <button type="button" class="btn-count active" data-count="1">1</button>
+            <button type="button" class="btn-count" data-count="2">2</button>
+            <button type="button" class="btn-count" data-count="3">3</button>
+          </div>
         </div>
+        <div class="cta-buttons-container" id="cta-low-container"></div>
       </div>
 
-      <div class="scoring-card medium">
+      <div class="scoring-card medium" data-level="medium">
         <div class="scoring-badge">Средний</div>
         <div class="field-group">
           <label class="field-label">Макс. баллов (включительно)</label>
@@ -152,12 +158,18 @@
           <textarea class="field-input field-textarea" id="score-medium-text" placeholder="Описание результата..."></textarea>
         </div>
         <div class="field-group">
-          <label class="field-label">CTA кнопки (через запятую)</label>
-          <input class="field-input" id="score-medium-cta" type="text" placeholder="Получить консультацию, Изучить методы" />
+          <label class="field-label">CTA кнопки</label>
+          <div class="cta-button-count-selector">
+            <span class="count-label">Количество:</span>
+            <button type="button" class="btn-count active" data-count="1">1</button>
+            <button type="button" class="btn-count" data-count="2">2</button>
+            <button type="button" class="btn-count" data-count="3">3</button>
+          </div>
         </div>
+        <div class="cta-buttons-container" id="cta-medium-container"></div>
       </div>
 
-      <div class="scoring-card high">
+      <div class="scoring-card high" data-level="high">
         <div class="scoring-badge">Высокий</div>
         <div class="field-group">
           <label class="field-label">Макс. баллов</label>
@@ -173,9 +185,15 @@
           <textarea class="field-input field-textarea" id="score-high-text" placeholder="Описание результата..."></textarea>
         </div>
         <div class="field-group">
-          <label class="field-label">CTA кнопки (через запятую)</label>
-          <input class="field-input" id="score-high-cta" type="text" placeholder="Найти клинику, Записаться" />
+          <label class="field-label">CTA кнопки</label>
+          <div class="cta-button-count-selector">
+            <span class="count-label">Количество:</span>
+            <button type="button" class="btn-count active" data-count="1">1</button>
+            <button type="button" class="btn-count" data-count="2">2</button>
+            <button type="button" class="btn-count" data-count="3">3</button>
+          </div>
         </div>
+        <div class="cta-buttons-container" id="cta-high-container"></div>
       </div>
     </div>
   </section>
