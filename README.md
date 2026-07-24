@@ -1,4 +1,144 @@
 
+# painhelp — Платформа квизов для Битрикс24
+
+Статический фронтенд с движком квизов + визуальный конструктор для создания новых квизов.
+
+---
+
+## 📦 Компоненты
+
+### 1. Движок квиза (`1st-pain-quiz-styled.html`)
+- Однофайловое приложение (HTML + CSS + JS)
+- Загружает сценарий из JSON
+- Интеграция с Битрикс24 (webhook)
+- Поддержка флагов и скоринга
+
+**Использование:**
+```bash
+python3 -m http.server 8000
+# Открыть http://localhost:8000/1st-pain-quiz-styled.html?quiz=pain-v1
+```
+
+### 2. Quiz Editor (`quiz-editor/`)
+Визуальный конструктор для создания JSON-квизов без кода.
+
+**Возможности:**
+- ✅ Создание вопросов и вариантов ответов
+- ✅ Настройка скоринга (3 уровня результатов)
+- ✅ CRM-интеграция (привязка к полям Битрикс24)
+- ✅ Специальные флаги (`is_chronic`, `failed_treatment`)
+- ✅ Интерактивный предпросмотр
+- ✅ Автосохранение в localStorage
+- ✅ Экспорт готового JSON
+
+**Файлы:**
+- [`quiz-editor/index.html`](quiz-editor/index.html) — интерфейс
+- [`quiz-editor/style.css`](quiz-editor/style.css) — стили
+- [`quiz-editor/app.js`](quiz-editor/app.js) — логика
+- [`quiz-editor/index.md`](quiz-editor/index.md) — полная документация
+
+**Запуск локально:**
+```bash
+npx serve quiz-editor
+# или
+python3 -m http.server 8000 --directory quiz-editor
+```
+
+---
+
+## 📚 Структура проекта
+
+```
+.
+├── 1st-pain-quiz-styled.html    — основной обработчик квиза
+├── scenarios/
+│   └── pain-v1.json             — сценарий квиза про боль
+├── quiz-editor/                 — конструктор квизов
+│   ├── index.html
+│   ├── style.css
+│   ├── app.js
+│   └── index.md                 — документация
+├── api/
+│   └── lead.js                  — сервис отправки лидов
+└── README.md                    — этот файл
+```
+
+---
+
+## 🚀 Быстрый старт
+
+### Создать новый квиз
+
+1. Открыть `quiz-editor/index.html` (локально или на хостинге)
+2. Заполнить метаданные (заголовок, вебхук Битрикс24)
+3. Добавить вопросы и варианты ответов
+4. Настроить скоринг
+5. Указать CRM-поля
+6. Скачать JSON → положить в `scenarios/`
+7. Подключить в URL: `?quiz=название`
+
+### Подключить квиз к Битрикс24
+
+В редакторе страниц Битрикс24 Сайты:
+```html
+<iframe src="https://yourhost/1st-pain-quiz-styled.html?quiz=pain-v1" 
+        width="100%" height="600" frameborder="0"></iframe>
+```
+
+---
+
+## 🔧 Схема JSON-квиза
+
+Полная спецификация в [`quiz-editor/index.md`](quiz-editor/index.md#схема-json-квиза).
+
+```json
+{
+  "meta": {
+    "title": "Заголовок",
+    "subtitle": "Подзаголовок",
+    "webhook": "https://xxx.bitrix24.ru/rest/.../crm.lead.add",
+    "source_label": "Метка источника"
+  },
+  "questions": [...],
+  "scoring": {...},
+  "crm_fields": {...}
+}
+```
+
+---
+
+## 📖 Документация
+
+- **Quiz Editor** — [`quiz-editor/index.md`](quiz-editor/index.md)
+  - Архитектура редактора
+  - Схема JSON и флаги
+  - Интеграция с Битрикс24
+  - Автосохранение и предпросмотр
+
+---
+
+## 🛠 Разработка
+
+### Локальный сервер
+
+```bash
+# Любой статический сервер подойдёт
+python3 -m http.server 8000
+npx serve .
+```
+
+### Браузерная совместимость
+
+Все компоненты используют:
+- ES2020+ JavaScript (нативный)
+- localStorage API
+- HTML5 Drag & Drop
+- Поддержка Chrome, Firefox, Safari, Edge (2020+)
+
+---
+
+## 📝 История изменений
+
 ===260601===
 Удалось решитьзадачку отключением показа оболжки квиза (точнее пропуск и переход к первой карточке)
 Что добавлено

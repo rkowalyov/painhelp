@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Редактор квизов — Битрикс24</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Quiz Editor">
+        <rect width="32" height="32" rx="8" fill="var(--color-primary)"/>
+        <rect x="7" y="9" width="18" height="3" rx="1.5" fill="white"/>
+        <rect x="7" y="14.5" width="13" height="3" rx="1.5" fill="white" opacity="0.7"/>
+        <rect x="7" y="20" width="10" height="3" rx="1.5" fill="white" opacity="0.5"/>
+      </svg>
+      <span class="logo-text">Quiz Editor</span>
+    </div>
+    <div class="header-actions">
+      <span class="save-indicator" id="saveIndicator">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранено
+      </span>
+      <button class="btn btn-ghost" id="resetBtn" title="Сбросить к демо-квизу">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.36"/></svg>
+        Сброс
+      </button>
+      <button class="btn btn-ghost" id="loadJsonBtn">Загрузить JSON</button>
+      <button class="btn btn-primary" id="exportBtn">Экспорт JSON</button>
+      <button class="btn-icon" data-theme-toggle aria-label="Переключить тему">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<input type="file" id="fileInput" accept=".json" style="display:none" />
+
+<main class="app-main">
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="meta">Мета</button>
+    <button class="tab-btn" data-tab="questions">Вопросы</button>
+    <button class="tab-btn" data-tab="scoring">Скоринг</button>
+    <button class="tab-btn" data-tab="crm">CRM-поля</button>
+    <button class="tab-btn" data-tab="quizpreview">Предпросмотр</button>
+    <button class="tab-btn" data-tab="preview">Превью JSON</button>
+  </nav>
+
+  <!-- ===== TAB: META ===== -->
+  <section class="tab-panel active" id="tab-meta">
+    <div class="panel-header">
+      <h2>Мета-данные квиза</h2>
+      <p>Общие настройки: заголовок, вебхук, метки доверия</p>
+    </div>
+    <div class="form-grid">
+      <div class="field-group span-2">
+        <label class="field-label">Заголовок квиза</label>
+        <input class="field-input" id="meta-title" type="text" placeholder="Проверьте свою боль за минуту" />
+      </div>
+      <div class="field-group span-2">
+        <label class="field-label">Подзаголовок</label>
+        <input class="field-input" id="meta-subtitle" type="text" placeholder="Ответьте на 5 вопросов и получите понимание..." />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Текст кнопки старта</label>
+        <input class="field-input" id="meta-cta_start" type="text" placeholder="Пройти тест" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Метка источника (CRM)</label>
+        <input class="field-input" id="meta-source_label" type="text" placeholder="Тест Квиз 26_05_07" />
+      </div>
+      <div class="field-group span-2">
+        <label class="field-label">URL вебхука Битрикс24</label>
+        <input class="field-input" id="meta-webhook" type="url" placeholder="https://xxx.bitrix24.ru/rest/1/.../crm.lead.add" />
+      </div>
+      <div class="field-group span-2">
+        <label class="field-label">Заголовок экрана email</label>
+        <input class="field-input" id="meta-email_title" type="text" placeholder="Мы почти готовы показать результат" />
+      </div>
+      <div class="field-group span-2">
+        <label class="field-label">Подзаголовок экрана email</label>
+        <input class="field-input" id="meta-email_subtitle" type="text" placeholder="Оставьте email, чтобы получить результат..." />
+      </div>
+      <div class="field-group span-2">
+        <label class="field-label">Fear-фраза (мотивация оставить email)</label>
+        <input class="field-input" id="meta-email_fear" type="text" placeholder="Боль, которая длится долго, может становиться хронической" />
+      </div>
+      <div class="field-group span-2">
+        <label class="field-label">Метки доверия (через запятую)</label>
+        <input class="field-input" id="meta-trust_badges" type="text" placeholder="Без регистрации, Анонимно, Основано на опыте врачей" />
+        <span class="field-hint">Разделяйте запятой. Отображаются под заголовком квиза.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: QUESTIONS ===== -->
+  <section class="tab-panel" id="tab-questions">
+    <div class="panel-header">
+      <h2>Вопросы</h2>
+      <p>Добавляйте, редактируйте и переупорядочивайте вопросы квиза</p>
+    </div>
+    <div id="questions-list"></div>
+    <button class="btn btn-outline add-btn" id="addQuestionBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Добавить вопрос
+    </button>
+  </section>
+
+  <!-- ===== TAB: SCORING ===== -->
+  <section class="tab-panel" id="tab-scoring">
+    <div class="panel-header">
+      <h2>Результаты (скоринг)</h2>
+      <p>Настройте три уровня результатов по сумме баллов</p>
+    </div>
+    <div class="scoring-grid">
+      <div class="scoring-card low">
+        <div class="scoring-badge">Низкий</div>
+        <div class="field-group">
+          <label class="field-label">Макс. баллов (включительно)</label>
+          <input class="field-input" id="score-low-max" type="number" value="3" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Заголовок результата</label>
+          <input class="field-input" id="score-low-title" type="text" placeholder="Серьёзных признаков не выявлено" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Текст</label>
+          <textarea class="field-input field-textarea" id="score-low-text" placeholder="Описание результата..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">CTA кнопки (через запятую)</label>
+          <input class="field-input" id="score-low-cta" type="text" placeholder="Читать полезные материалы, Узнать больше" />
+        </div>
+      </div>
+
+      <div class="scoring-card medium">
+        <div class="scoring-badge">Средний</div>
+        <div class="field-group">
+          <label class="field-label">Макс. баллов (включительно)</label>
+          <input class="field-input" id="score-medium-max" type="number" value="7" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Заголовок результата</label>
+          <input class="field-input" id="score-medium-title" type="text" placeholder="Боль требует внимания" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Текст</label>
+          <textarea class="field-input field-textarea" id="score-medium-text" placeholder="Описание результата..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">CTA кнопки (через запятую)</label>
+          <input class="field-input" id="score-medium-cta" type="text" placeholder="Получить консультацию, Изучить методы" />
+        </div>
+      </div>
+
+      <div class="scoring-card high">
+        <div class="scoring-badge">Высокий</div>
+        <div class="field-group">
+          <label class="field-label">Макс. баллов</label>
+          <input class="field-input" id="score-high-max" type="number" value="99" min="0" />
+          <span class="field-hint">Обычно 99 — для «всё что выше»</span>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Заголовок результата</label>
+          <input class="field-input" id="score-high-title" type="text" placeholder="Рекомендуем обратиться к специалисту" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Текст</label>
+          <textarea class="field-input field-textarea" id="score-high-text" placeholder="Описание результата..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">CTA кнопки (через запятую)</label>
+          <input class="field-input" id="score-high-cta" type="text" placeholder="Найти клинику, Записаться" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: CRM ===== -->
+  <section class="tab-panel" id="tab-crm">
+    <div class="panel-header">
+      <h2>CRM-поля Битрикс24</h2>
+      <p>ID пользовательских полей лида (UF_CRM_...)</p>
+    </div>
+    <div class="crm-info">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Поля имя, фамилия, отчество, email, телефон — стандартные поля Битрикс24, передаются автоматически обработчиком квиза.
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label">Итоговый балл</label>
+        <input class="field-input" id="crm-score" type="text" placeholder="UF_CRM_1777993552" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Текст результата</label>
+        <input class="field-input" id="crm-result" type="text" placeholder="UF_CRM_1777993608" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Флаг «хроническая боль»</label>
+        <input class="field-input" id="crm-is_chronic" type="text" placeholder="UF_CRM_1777993788" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Флаг «неуспешное лечение»</label>
+        <input class="field-input" id="crm-failed_treatment" type="text" placeholder="UF_CRM_1777993848" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Источник (source)</label>
+        <input class="field-input" id="crm-source" type="text" placeholder="UF_CRM_1777993881" />
+      </div>
+    </div>
+
+    <div class="panel-header" style="margin-top:var(--space-8)">
+      <h3>Флаги-условия</h3>
+      <p>Специальные поля активируются по условиям из ответов</p>
+    </div>
+    <div class="crm-flags-info">
+      <div class="flag-card">
+        <div class="flag-name"><code>chronic_if_gte_index</code></div>
+        <div class="flag-desc">Ставит флаг <strong>is_chronic</strong>, если индекс выбранного варианта ≥ <code>chronic_threshold</code> вопроса</div>
+      </div>
+      <div class="flag-card">
+        <div class="flag-name"><code>failed_treatment_if_value</code></div>
+        <div class="flag-desc">Ставит флаг <strong>failed_treatment</strong>, если значение ответа совпадает с <code>failed_treatment_value</code> вопроса</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: QUIZ PREVIEW ===== -->
+  <section class="tab-panel" id="tab-quizpreview">
+    <div class="panel-header">
+      <h2>Предпросмотр квиза</h2>
+      <p>Так видит пользователь. Данные не отправляются в CRM.</p>
+    </div>
+    <div class="qp-shell">
+      <div class="qp-phone">
+        <div class="qp-screen" id="qpScreen"></div>
+      </div>
+      <div class="qp-restart-wrap">
+        <button class="btn btn-ghost" id="qpRestartBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.36"/></svg>
+          Начать заново
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: PREVIEW ===== -->
+  <section class="tab-panel" id="tab-preview">
+    <div class="panel-header">
+      <h2>Превью JSON</h2>
+      <p>Итоговый JSON для вставки в обработчик квиза</p>
+    </div>
+    <div class="preview-toolbar">
+      <button class="btn btn-ghost" id="copyJsonBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Копировать
+      </button>
+      <button class="btn btn-primary" id="downloadBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Скачать quiz.json
+      </button>
+      <span class="copy-toast" id="copyToast">Скопировано!</span>
+    </div>
+    <pre class="json-preview" id="jsonPreview"></pre>
+  </section>
+</main>
+
+<!-- QUESTION TEMPLATE (hidden) -->
+<template id="question-template">
+  <div class="question-card" data-q-index="">
+    <div class="question-header">
+      <div class="question-drag">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </div>
+      <span class="question-num">Вопрос 1</span>
+      <div class="question-header-actions">
+        <button class="btn-icon btn-move-up" title="Переместить вверх" aria-label="Вверх">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <button class="btn-icon btn-move-down" title="Переместить вниз" aria-label="Вниз">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="header-divider"></div>
+        <button class="btn-icon btn-duplicate-q" title="Дублировать вопрос" aria-label="Дублировать">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="btn-icon btn-collapse" title="Свернуть/развернуть">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <button class="btn-icon btn-delete-q" title="Удалить вопрос">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="question-body">
+      <div class="form-grid">
+        <div class="field-group span-2">
+          <label class="field-label">Текст вопроса</label>
+          <input class="field-input q-text" type="text" placeholder="Введите вопрос..." />
+        </div>
+        <div class="field-group">
+          <label class="field-label">ID вопроса</label>
+          <input class="field-input q-id" type="text" placeholder="pain_location" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">CRM-поле (UF_CRM_...)</label>
+          <input class="field-input q-crm" type="text" placeholder="UF_CRM_1234567890" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Флаг</label>
+          <select class="field-input q-flag">
+            <option value="">— нет —</option>
+            <option value="chronic_if_gte_index">chronic_if_gte_index</option>
+            <option value="failed_treatment_if_value">failed_treatment_if_value</option>
+          </select>
+        </div>
+        <div class="field-group q-flag-param-wrap" style="display:none">
+          <label class="field-label q-flag-param-label">Параметр флага</label>
+          <input class="field-input q-flag-param" type="text" placeholder="" />
+          <span class="field-hint q-flag-param-hint"></span>
+        </div>
+      </div>
+
+      <div class="options-section">
+        <div class="options-header">
+          <span class="options-title">Варианты ответов</span>
+          <button class="btn btn-ghost btn-sm add-option-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить вариант
+          </button>
+        </div>
+        <div class="options-list">
+          <!-- options injected here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="option-template">
+  <div class="option-row">
+    <div class="option-drag">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+    </div>
+    <input class="field-input opt-label" type="text" placeholder="Текст варианта" />
+    <input class="field-input opt-value" type="text" placeholder="value (slug)" />
+    <input class="field-input opt-score" type="number" placeholder="Балл" min="0" max="99" />
+    <div class="opt-move-btns">
+      <button class="btn-icon btn-opt-up" title="Вариант вверх" aria-label="Вверх">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
+      <button class="btn-icon btn-opt-down" title="Вариант вниз" aria-label="Вниз">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <button class="btn-icon btn-duplicate-opt" title="Дублировать вариант" aria-label="Дублировать">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+    <button class="btn-icon btn-delete-opt" title="Удалить">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+</template>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Экспорт JSON</h3>
+      <button class="btn-icon modal-close" id="modalClose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p>Квиз готов к использованию. Выберите действие:</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="modalDownload">Скачать quiz.json</button>
+      <button class="btn btn-outline" id="modalCopy">Скопировать в буфер</button>
+      <button class="btn btn-ghost" id="modalPreview">Открыть превью</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
