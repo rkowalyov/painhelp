@@ -468,14 +468,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     
     // Проверка режима редактирования
     const editMode = getQueryParam("edit");
+    console.log("[QUIZ] Edit mode param:", editMode);
+    console.log("[QUIZ] isTruthyParam result:", isTruthyParam(editMode));
+    
     if (isTruthyParam(editMode)) {
       // Сохранить JSON в localStorage и редирект на редактор
+      console.log("[QUIZ] Redirecting to editor...");
       localStorage.setItem("quiz_editor_load", JSON.stringify(scenario));
       const quizName = getQueryParam(SCENARIO_QUERY_KEY) || "new";
-      window.location.href = `/quiz-editor/?load=${encodeURIComponent(quizName)}&edit=Y`;
+      const editorUrl = `/quiz-editor/?load=${encodeURIComponent(quizName)}&edit=Y`;
+      console.log("[QUIZ] Editor URL:", editorUrl);
+      window.location.href = editorUrl;
       return;
     }
     
+    console.log("[QUIZ] Normal quiz mode");
     buildHero();
     if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
       startQuiz();

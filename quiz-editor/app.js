@@ -11,10 +11,14 @@ function getLoadParam() {
 
 function loadFromSessionStorage() {
   try {
+    console.log("[EDITOR] Checking localStorage...");
     const data = localStorage.getItem('quiz_editor_load');
+    console.log("[EDITOR] Found data:", !!data);
     if (data) {
+      const parsed = JSON.parse(data);
       localStorage.removeItem('quiz_editor_load');
-      return JSON.parse(data);
+      console.log("[EDITOR] Loaded quiz from localStorage");
+      return parsed;
     }
   } catch (e) {
     console.error('[EDITOR] Failed to load from localStorage:', e);
@@ -738,14 +742,18 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 // ---------- INIT: load from sessionStorage or localStorage or default ----------
 // Сначала проверяем sessionStorage (загрузка из quiz-handler)
+console.log("[EDITOR] Initializing...");
 let loadedData = loadFromSessionStorage();
+console.log("[EDITOR] Loaded from external:", !!loadedData);
 
 // Если нет, пробуем localStorage
 if (!loadedData) {
   loadedData = loadFromStorage();
+  console.log("[EDITOR] Loaded from localStorage:", !!loadedData);
 }
 
 // Загружаем данные
+console.log("[EDITOR] Using data:", loadedData ? "external/saved" : "default");
 loadFromObject(loadedData || DEFAULT_JSON);
 
 // ============================================================
