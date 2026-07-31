@@ -698,9 +698,13 @@ function showResult(r) {
 async function sendToCRM(r) {
   const f = scenario.crm_fields;
   const source = scenario.meta.source_label || "quiz";
+  const leadTitlePrefix = "PainHelp_pacientam_";
+  const leadTitle = source.startsWith(leadTitlePrefix)
+    ? source
+    : `${leadTitlePrefix}${source}`;
 
   const fields = {
-    TITLE: source,
+    TITLE: leadTitle,
     EMAIL: [{ VALUE: state.email, VALUE_TYPE: "WORK" }],
     SOURCE_ID: "WEB",
     SOURCE_DESCRIPTION: source,
