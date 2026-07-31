@@ -698,10 +698,14 @@ function showResult(r) {
 async function sendToCRM(r) {
   const f = scenario.crm_fields;
   const source = scenario.meta.source_label || "quiz";
-  const leadTitlePrefix = "PainHelp_pacientam_";
-  const leadTitle = source.startsWith(leadTitlePrefix)
-    ? source
-    : `${leadTitlePrefix}${source}`;
+  const oldLeadTitlePrefix = "PainHelp_pacientam_";
+  const leadTitlePrefix = "PainHelp_pacientam_quiz";
+  const normalizedSource = source.startsWith(oldLeadTitlePrefix)
+    ? source.slice(oldLeadTitlePrefix.length).trimStart()
+    : source;
+  const leadTitle = normalizedSource.startsWith(leadTitlePrefix)
+    ? normalizedSource
+    : `${leadTitlePrefix}${normalizedSource}`;
 
   const fields = {
     TITLE: leadTitle,
