@@ -101,7 +101,11 @@ async function sendConfirmWebhook(id) {
     setTimeout(() => {
       showSpinner(false);
       const alreadyConfirmed = !!(result && result.already_confirmed);
-      if (alreadyConfirmed) {
+      const noConfirmRequired = !!(result && result.no_confirm_required);
+      if (noConfirmRequired) {
+        updateHeading('Подтверждение не предусмотрено');
+        updateStatus('Для этого лида подтверждение email не требуется.');
+      } else if (alreadyConfirmed) {
         updateHeading('Адрес уже был подтвержден / Already confirmed');
         updateStatus('Этот адрес уже подтвержден ранее. Действий больше не требуется.');
       } else {

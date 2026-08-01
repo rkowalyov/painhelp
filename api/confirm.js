@@ -1,5 +1,7 @@
 const CONFIRM_FIELD_CODE = 'UF_CRM_LEAD_1775569282052';
-const CONFIRM_FIELD_VALUE = '1507';
+const CONFIRM_OPTION_CONTINUE_NO_REG = '1411';
+const CONFIRM_OPTION_NEEDS_CONFIRM = '1413';
+const CONFIRM_OPTION_CONFIRMED = '1507';
 const BITRIX_TIMEOUT_MS = 12000;
 
 function normalizeWebhook(url) {
@@ -53,9 +55,16 @@ async function checkAlreadyConfirmed(getWebhook, id) {
   }
 
   const lead = response.data && response.data.result;
-  const value = lead && lead[CONFIRM_FIELD_CODE];
-  const alreadyConfirmed = String(value || '') === String(CONFIRM_FIELD_VALUE);
-  return { ok: true, alreadyConfirmed, response };
+  const value = String((lead && lead[CONFIRM_FIELD_CODE]) || '');
+  const status = value === CONFIRM_OPTION_CONFIRMED
+    ? 'confirmed'
+    : value === CONFIRM_OPTION_NEEDS_CONFIRM
+      ? 'needs_confirm'
+      : value === CONFIRM_OPTION_CONTINUE_NO_REG
+        ? 'no_confirm_required'
+        : 'unknown';
+
+  return { ok: true, status, currentValue: value, response };
 }
 
 export default async function handler(req, res) {
@@ -79,20 +88,28 @@ export default async function handler(req, res) {
   const getWebhook = deriveGetWebhook(sourceWebhook);
 
   const preCheck = await checkAlreadyConfirmed(getWebhook, id);
-  if (preCheck.ok && preCheck.alreadyConfirmed) {
-    return res.status(200).json({ result: true, already_confirmed: true });
+  if (preCheck.ok) {
+    if (preCheck.status === 'confirmed') {
+      return res.status(200).json({ result: true, already_confirmed: true, current_value: preCheck.currentValue });
+    }
+    if (preCheck.status === 'no_confirm_required') {
+      return res.status(200).json({ result: true, no_confirm_required: true, current_value: preCheck.currentValue });
+    }
   }
 
   const url = new URL(webhook);
   url.searchParams.set('id', id);
-  url.searchParams.set(`fields[${CONFIRM_FIELD_CODE}]`, CONFIRM_FIELD_VALUE);
+  url.searchParams.set(`fields[${CONFIRM_FIELD_CODE}]`, CONFIRM_OPTION_CONFIRMED);
 
   try {
     const response = await bitrixGet(url.toString());
     if (!response.ok) {
       const postCheck = await checkAlreadyConfirmed(getWebhook, id);
-      if (postCheck.ok && postCheck.alreadyConfirmed) {
-        return res.status(200).json({ result: true, already_confirmed: true });
+      if (postCheck.ok && postCheck.status === 'confirmed') {
+        return res.status(200).json({ result: true, already_confirmed: true, current_value: postCheck.currentValue });
+      }
+      if (postCheck.ok && postCheck.status === 'no_confirm_required') {
+        return res.status(200).json({ result: true, no_confirm_required: true, current_value: postCheck.currentValue });
       }
       return res.status(response.status || 502).json({ error: `Bitrix HTTP ${response.status || 502}`, details: response.text });
     }
@@ -100,16 +117,22 @@ export default async function handler(req, res) {
     const data = response.data;
     if (data && data.result !== true) {
       const postCheck = await checkAlreadyConfirmed(getWebhook, id);
-      if (postCheck.ok && postCheck.alreadyConfirmed) {
-        return res.status(200).json({ result: true, already_confirmed: true });
+      if (postCheck.ok && postCheck.status === 'confirmed') {
+        return res.status(200).json({ result: true, already_confirmed: true, current_value: postCheck.currentValue });
+      }
+      if (postCheck.ok && postCheck.status === 'no_confirm_required') {
+        return res.status(200).json({ result: true, no_confirm_required: true, current_value: postCheck.currentValue });
       }
     }
 
     return res.status(200).json(data);
   } catch (error) {
-    const postCheck = await checkAlreadyConfirmed(getWebhook, id).catch(() => ({ ok: false, alreadyConfirmed: false }));
-    if (postCheck.ok && postCheck.alreadyConfirmed) {
-      return res.status(200).json({ result: true, already_confirmed: true });
+    const postCheck = await checkAlreadyConfirmed(getWebhook, id).catch(() => ({ ok: false, status: 'unknown' }));
+    if (postCheck.ok && postCheck.status === 'confirmed') {
+      return res.status(200).json({ result: true, already_confirmed: true, current_value: postCheck.currentValue });
+    }
+    if (postCheck.ok && postCheck.status === 'no_confirm_required') {
+      return res.status(200).json({ result: true, no_confirm_required: true, current_value: postCheck.currentValue });
     }
     console.error('[Vercel API] Confirm forwarding failed:', error);
     return res.status(502).json({ error: error.message || 'Confirm forwarding failed' });
