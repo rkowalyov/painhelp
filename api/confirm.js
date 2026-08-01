@@ -1,9 +1,13 @@
-const DEFAULT_CONFIRM_WEBHOOK = 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.update.json';
 const CONFIRM_FIELD_CODE = 'UF_CRM_LEAD_1775569282052';
 const CONFIRM_FIELD_VALUE = '1507';
 
 function normalizeWebhook(url) {
   return url.replace(/\/+$/, '').replace(/\.json$/, '') + '.json';
+}
+
+function deriveUpdateWebhook(baseWebhook) {
+  const normalized = normalizeWebhook(baseWebhook);
+  return normalized.replace(/crm\.lead\.add(?:\.json)?$/i, 'crm.lead.update.json');
 }
 
 export default async function handler(req, res) {
@@ -18,7 +22,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid id' });
   }
 
-  const webhook = normalizeWebhook(process.env.BITRIX_CONFIRM_WEBHOOK || DEFAULT_CONFIRM_WEBHOOK);
+  const sourceWebhook = process.env.BITRIX_CONFIRM_WEBHOOK || process.env.BITRIX_WEBHOOK;
+  if (!sourceWebhook) {
+    return res.status(500).json({ error: 'BITRIX_WEBHOOK is not configured' });
+  }
+
+  const webhook = deriveUpdateWebhook(sourceWebhook);
   const url = new URL(webhook);
   url.searchParams.set('id', id);
   url.searchParams.set(`fields[${CONFIRM_FIELD_CODE}]`, CONFIRM_FIELD_VALUE);

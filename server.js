@@ -15,7 +15,7 @@ const allowedEnv = process.env.ALLOWED_ORIGINS || '';
 const allowed = allowedEnv.split(',').map(s => s.trim()).filter(Boolean);
 console.log('[PROXY] Allowed origins:', allowed.length ? allowed : ['*']);
 if (!process.env.BITRIX_WEBHOOK) {
-  console.warn('[PROXY] WARNING: BITRIX_WEBHOOK is not set. /api/lead will fail.');
+  console.warn('[PROXY] WARNING: BITRIX_WEBHOOK is not set. /api/lead and /api/confirm will fail.');
 }
 app.use(cors({
   origin: function(origin, cb) {
@@ -62,8 +62,11 @@ app.post('/api/confirm', async (req, res) => {
   const id = String(rawId || '').trim();
   if (!/^\d+$/.test(id)) return res.status(400).json({ error: 'invalid id' });
 
-  const webhookBase = process.env.BITRIX_CONFIRM_WEBHOOK || 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.update.json';
-  const webhook = webhookBase.replace(/\/+$/, '').replace(/\.json$/, '') + '.json';
+  const sourceWebhook = process.env.BITRIX_CONFIRM_WEBHOOK || process.env.BITRIX_WEBHOOK;
+  if (!sourceWebhook) return res.status(500).json({ error: 'webhook missing' });
+
+  const normalized = sourceWebhook.replace(/\/+$/, '').replace(/\.json$/, '') + '.json';
+  const webhook = normalized.replace(/crm\.lead\.add(?:\.json)?$/i, 'crm.lead.update.json');
   const url = new URL(webhook);
   url.searchParams.set('id', id);
   url.searchParams.set('fields[UF_CRM_LEAD_1775569282052]', '1507');

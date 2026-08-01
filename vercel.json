@@ -2,6 +2,7 @@
   "version": 2,
   "builds": [
     { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "confirm.js", "use": "@vercel/static" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "scenarios/*.json", "use": "@vercel/static" },
     { "src": "quiz-editor/**/*", "use": "@vercel/static" }
