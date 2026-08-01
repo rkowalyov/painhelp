@@ -146,15 +146,36 @@ function normalizeMaskedString(masked) {
 function parseMaskedId(masked) {
   if (!masked || typeof masked !== 'string') return null;
   const normalized = normalizeMaskedString(masked);
-  // Pattern: id:t_<rand1>&/mUm%<rnd2><ID><rnd3>$rkw$^<rand4>mdw
-  const re = /^id:t_(7\d{3})&\/mUm%(\d{2})(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
-  const m = normalized.match(re);
-  if (!m) return null;
-  const rand1 = Number(m[1]);
-  const rnd2 = Number(m[2]);
-  const id = m[3];
-  const rnd3 = Number(m[4]);
-  const rand4 = Number(m[5]);
+  // Pattern A: id:t_<rand1>&/mUm%<rnd2><ID><rnd3>$rkw$^<rand4>mdw
+  // Pattern B: the %<rnd2> part can be URL-decoded by browser into one char, e.g. %56 -> V.
+  const encodedRe = /^id:t_(7\d{3})&\/mUm%(\d{2})(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
+  const decodedRe = /^id:t_(7\d{3})&\/mUm([^\d%])(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
+
+  let rand1;
+  let rnd2;
+  let id;
+  let rnd3;
+  let rand4;
+
+  const mEncoded = normalized.match(encodedRe);
+  if (mEncoded) {
+    rand1 = Number(mEncoded[1]);
+    rnd2 = Number(mEncoded[2]);
+    id = mEncoded[3];
+    rnd3 = Number(mEncoded[4]);
+    rand4 = Number(mEncoded[5]);
+  } else {
+    const mDecoded = normalized.match(decodedRe);
+    if (!mDecoded) return null;
+
+    rand1 = Number(mDecoded[1]);
+    // Recover original two digits from decoded byte, e.g. 'V'(0x56) -> 56.
+    const hexByte = mDecoded[2].charCodeAt(0).toString(16).slice(-2);
+    rnd2 = Number(hexByte);
+    id = mDecoded[3];
+    rnd3 = Number(mDecoded[4]);
+    rand4 = Number(mDecoded[5]);
+  }
 
   if (!(rand1 >= 7001 && rand1 <= 7999)) return null;
   if (!(rnd2 >= 11 && rnd2 <= 99)) return null;
