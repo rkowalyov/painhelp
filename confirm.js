@@ -100,8 +100,14 @@ async function sendConfirmWebhook(id) {
 
     setTimeout(() => {
       showSpinner(false);
-      updateHeading('Адрес подтвержден / Address confirmed');
-      updateStatus('Адрес подтвержден. Address confirmed.');
+      const alreadyConfirmed = !!(result && result.already_confirmed);
+      if (alreadyConfirmed) {
+        updateHeading('Адрес уже был подтвержден / Already confirmed');
+        updateStatus('Этот адрес уже подтвержден ранее. Действий больше не требуется.');
+      } else {
+        updateHeading('Адрес подтвержден / Address confirmed');
+        updateStatus('Адрес подтвержден. Address confirmed.');
+      }
       showStatusText();
 
       setTimeout(() => {
@@ -148,8 +154,10 @@ function parseMaskedId(masked) {
   const normalized = normalizeMaskedString(masked);
   // Pattern A: id:t_<rand1>&/mUm%<rnd2><ID><rnd3>$rkw$^<rand4>mdw
   // Pattern B: the %<rnd2> part can be URL-decoded by browser into one char, e.g. %56 -> V.
+  // Pattern C: some clients may strip '%' and keep digits directly: mUm<rnd2><ID><rnd3>.
   const encodedRe = /^id:t_(7\d{3})&\/mUm%(\d{2})(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
   const decodedRe = /^id:t_(7\d{3})&\/mUm([^\d%])(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
+  const numericRe = /^id:t_(7\d{3})&\/mUm(\d{2})(\d+)(\d{2})\$rkw\$\^(\d{4})mdw$/;
 
   let rand1;
   let rnd2;
@@ -165,16 +173,25 @@ function parseMaskedId(masked) {
     rnd3 = Number(mEncoded[4]);
     rand4 = Number(mEncoded[5]);
   } else {
-    const mDecoded = normalized.match(decodedRe);
-    if (!mDecoded) return null;
+    const mNumeric = normalized.match(numericRe);
+    if (mNumeric) {
+      rand1 = Number(mNumeric[1]);
+      rnd2 = Number(mNumeric[2]);
+      id = mNumeric[3];
+      rnd3 = Number(mNumeric[4]);
+      rand4 = Number(mNumeric[5]);
+    } else {
+      const mDecoded = normalized.match(decodedRe);
+      if (!mDecoded) return null;
 
-    rand1 = Number(mDecoded[1]);
-    // Recover original two digits from decoded byte, e.g. 'V'(0x56) -> 56.
-    const hexByte = mDecoded[2].charCodeAt(0).toString(16).slice(-2);
-    rnd2 = Number(hexByte);
-    id = mDecoded[3];
-    rnd3 = Number(mDecoded[4]);
-    rand4 = Number(mDecoded[5]);
+      rand1 = Number(mDecoded[1]);
+      // Recover original two digits from decoded byte, e.g. 'V'(0x56) -> 56.
+      const hexByte = mDecoded[2].charCodeAt(0).toString(16).slice(-2);
+      rnd2 = Number(hexByte);
+      id = mDecoded[3];
+      rnd3 = Number(mDecoded[4]);
+      rand4 = Number(mDecoded[5]);
+    }
   }
 
   if (!(rand1 >= 7001 && rand1 <= 7999)) return null;
