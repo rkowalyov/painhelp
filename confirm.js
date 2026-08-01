@@ -59,9 +59,6 @@ function hideStatusText() {
 }
 
 async function sendConfirmWebhook(id) {
-  const url = new URL('https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.update.json');
-  url.searchParams.set('id', id);
-  url.searchParams.set('fields[UF_CRM_LEAD_1775569282052]', '1507');
 
   const startTime = Date.now();
   updateHeading('Выполняется подтверждение...');
@@ -70,12 +67,19 @@ async function sendConfirmWebhook(id) {
   showSpinner(true);
   updateSubtext('');
 
+  const controller = new AbortController();
+  const timeoutMs = 15000;
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
   try {
-    const response = await fetch(url.toString(), {
-      method: 'GET',
+    const response = await fetch('/api/confirm', {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Accept': 'application/json'
-      }
+      },
+      body: JSON.stringify({ id }),
+      signal: controller.signal
     });
 
     if (!response.ok) {
@@ -85,6 +89,11 @@ async function sendConfirmWebhook(id) {
 
     const result = await response.json();
     console.log('confirm webhook result', result);
+
+    if (result && result.result !== true) {
+      throw new Error(result.error_description || result.error || 'Bitrix update failed');
+    }
+
     const elapsed = Date.now() - startTime;
     const minDuration = 1500;
     const wait = Math.max(0, minDuration - elapsed);
@@ -104,8 +113,14 @@ async function sendConfirmWebhook(id) {
     console.error('confirm webhook failed', error);
     showSpinner(false);
     updateHeading('Ошибка при подтверждении');
-    updateStatus(`Ошибка webhook: ${error.message}`, true);
+    const msg = error && error.name === 'AbortError'
+      ? 'Истекло время ожидания ответа сервера подтверждения.'
+      : `Ошибка webhook: ${error.message}`;
+    updateStatus(msg, true);
+    showStatusText();
     updateSubtext('Попробуйте обновить страницу или закройте окно вручную.');
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

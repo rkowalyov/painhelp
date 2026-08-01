@@ -57,6 +57,36 @@ app.post('/api/lead', async (req, res) => {
   }
 });
 
+app.post('/api/confirm', async (req, res) => {
+  const rawId = req.body && req.body.id;
+  const id = String(rawId || '').trim();
+  if (!/^\d+$/.test(id)) return res.status(400).json({ error: 'invalid id' });
+
+  const webhookBase = process.env.BITRIX_CONFIRM_WEBHOOK || 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.update.json';
+  const webhook = webhookBase.replace(/\/+$/, '').replace(/\.json$/, '') + '.json';
+  const url = new URL(webhook);
+  url.searchParams.set('id', id);
+  url.searchParams.set('fields[UF_CRM_LEAD_1775569282052]', '1507');
+
+  try {
+    const resp = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text();
+      return res.status(resp.status).json({ error: `Bitrix HTTP ${resp.status}`, details: text });
+    }
+
+    const data = await resp.json();
+    return res.json(data);
+  } catch (e) {
+    console.error('[PROXY] Error forwarding confirm to Bitrix:', e);
+    return res.status(502).json({ error: e.message });
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error(err && err.message);
   res.status(500).json({ error: err && err.message });
