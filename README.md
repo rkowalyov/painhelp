@@ -5,6 +5,13 @@
 
 ---
 
+## 📘 Документация по квизам
+
+- Полный гайд: [QUIZ_GUIDE.md](QUIZ_GUIDE.md)
+- Документация конструктора: [quiz-editor/index.md](quiz-editor/index.md)
+
+---
+
 ## 📦 Компоненты
 
 ### 1. Движок квиза (`1st-pain-quiz-styled.html`)
