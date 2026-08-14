@@ -758,8 +758,15 @@ async function sendToCRM(r) {
     SOURCE_DESCRIPTION: source,
   };
 
+  const answersJson = {};
   scenario.questions.forEach(q => {
-    if (q.crm_field) fields[q.crm_field] = r.crm_answers[q.id] || "";
+    const answerValue = r.crm_answers[q.id];
+    if (answerValue !== undefined && answerValue !== null && answerValue !== "") {
+      answersJson[q.id] = answerValue;
+    }
+    if (q.crm_field) {
+      fields[q.crm_field] = answerValue || "";
+    }
   });
 
   if (f.score)            fields[f.score]            = r.score;
@@ -767,6 +774,7 @@ async function sendToCRM(r) {
   if (f.is_chronic)       fields[f.is_chronic]       = r.isChronic ? "Y" : "N";
   if (f.failed_treatment) fields[f.failed_treatment] = r.failedTreatment ? "Y" : "N";
   if (f.source)           fields[f.source]           = source;
+  if (f.answers_json)     fields[f.answers_json]     = JSON.stringify(answersJson);
   if (f.quiz_date)        fields[f.quiz_date]        = new Date().toISOString();
 
   console.log("[QUIZ] Payload (to proxy):", JSON.stringify({ fields }, null, 2));

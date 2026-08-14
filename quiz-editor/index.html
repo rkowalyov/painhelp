@@ -199,6 +199,10 @@
         <label class="field-label">Источник (source)</label>
         <input class="field-input" id="crm-source" type="text" placeholder="UF_CRM_1777993881" />
       </div>
+      <div class="field-group">
+        <label class="field-label">JSON ответов квиза</label>
+        <input class="field-input" id="crm-answers_json" type="text" placeholder="UF_CRM_QUIZ_JSON" />
+      </div>
     </div>
 
     <div class="panel-header" style="margin-top:var(--space-8)">
@@ -298,8 +302,10 @@
           <input class="field-input q-id" type="text" placeholder="pain_location" />
         </div>
         <div class="field-group">
-          <label class="field-label">CRM-поле (UF_CRM_...)</label>
-          <input class="field-input q-crm" type="text" placeholder="UF_CRM_1234567890" />
+          <label class="field-label">CRM-поле для ответа</label>
+          <select class="field-input q-crm-select">
+            <option value="">— не указано —</option>
+          </select>
         </div>
         <div class="field-group">
           <label class="field-label">Флаг</label>

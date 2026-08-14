@@ -260,6 +260,20 @@ function renderScoringLevels() {
   });
 }
 
+const TEMPLATE_CRM_FIELDS = [
+  { label: 'JSON ответов квиза — UF_CRM_QUIZ_JSON', value: 'UF_CRM_QUIZ_JSON' },
+  { label: 'Итоговый балл — UF_CRM_1777993552', value: 'UF_CRM_1777993552' },
+  { label: 'Результат — UF_CRM_1777993608', value: 'UF_CRM_1777993608' },
+  { label: 'Насколько сильная боль — UF_CRM_1777993688', value: 'UF_CRM_1777993688' },
+  { label: 'Где болит — UF_CRM_1777993643', value: 'UF_CRM_1777993643' },
+  { label: 'Как давно появилась боль — UF_CRM_1777993660', value: 'UF_CRM_1777993660' },
+  { label: 'Влияние боли на жизнь — UF_CRM_1777993717', value: 'UF_CRM_1777993717' },
+  { label: 'Обращались к врачу — UF_CRM_1777993749', value: 'UF_CRM_1777993749' },
+  { label: 'Хроническая боль — UF_CRM_1777993788', value: 'UF_CRM_1777993788' },
+  { label: 'Лечение не помогло — UF_CRM_1777993848', value: 'UF_CRM_1777993848' },
+  { label: 'Источник — UF_CRM_1777993881', value: 'UF_CRM_1777993881' }
+];
+
 const DEFAULT_JSON = {
   meta: {
     title: "Проверьте свою боль за минуту",
@@ -334,7 +348,8 @@ const DEFAULT_JSON = {
     result: "UF_CRM_1777993608",
     is_chronic: "UF_CRM_1777993788",
     failed_treatment: "UF_CRM_1777993848",
-    source: "UF_CRM_1777993881"
+    source: "UF_CRM_1777993881",
+    answers_json: "UF_CRM_QUIZ_JSON"
   }
 };
 
@@ -464,6 +479,7 @@ function loadFromObject(data) {
   setVal('crm-is_chronic', c.is_chronic || '');
   setVal('crm-failed_treatment', c.failed_treatment || '');
   setVal('crm-source', c.source || '');
+  setVal('crm-answers_json', c.answers_json || c.quiz_json || '');
 
   // Questions
   questions = (data.questions || []).map(q => ({
@@ -504,6 +520,34 @@ function renderAllQuestions() {
   initQuestionDnD();
 }
 
+function getUsedTemplateCrmFields(excludeIndex = null) {
+  const used = new Set();
+  questions.forEach((q, i) => {
+    if (i === excludeIndex) return;
+    const value = String(q.crm_field || '').trim();
+    if (value && TEMPLATE_CRM_FIELDS.some(field => field.value === value)) {
+      used.add(value);
+    }
+  });
+  return used;
+}
+
+function getCrmFieldOptions(currentValue, excludeIndex = null) {
+  const used = getUsedTemplateCrmFields(excludeIndex);
+  const options = [{ label: '— не указано —', value: '' }];
+
+  TEMPLATE_CRM_FIELDS.forEach(field => {
+    const isUsedByAnotherQuestion = used.has(field.value) && field.value !== (currentValue || '');
+    options.push({
+      label: field.label,
+      value: field.value,
+      disabled: isUsedByAnotherQuestion
+    });
+  });
+
+  return options;
+}
+
 function renderQuestion(idx) {
   const q = questions[idx];
   const clone = questionTemplate.content.cloneNode(true);
@@ -514,7 +558,7 @@ function renderQuestion(idx) {
   // Bind fields
   const qText  = card.querySelector('.q-text');
   const qId    = card.querySelector('.q-id');
-  const qCrm   = card.querySelector('.q-crm');
+  const qCrmSelect = card.querySelector('.q-crm-select');
   const qFlag  = card.querySelector('.q-flag');
   const flagParamWrap  = card.querySelector('.q-flag-param-wrap');
   const flagParamLabel = card.querySelector('.q-flag-param-label');
@@ -523,8 +567,23 @@ function renderQuestion(idx) {
 
   qText.value  = q.text || '';
   qId.value    = q.id || '';
-  qCrm.value   = q.crm_field || '';
   qFlag.value  = q.flag || '';
+
+  const selectedValue = String(q.crm_field || '').trim();
+  qCrmSelect.innerHTML = '';
+  getCrmFieldOptions(selectedValue, idx).forEach(option => {
+    const opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.label;
+    opt.disabled = Boolean(option.disabled);
+    qCrmSelect.appendChild(opt);
+  });
+
+  qCrmSelect.value = selectedValue || '';
+
+  qCrmSelect.addEventListener('change', () => {
+    questions[idx].crm_field = qCrmSelect.value;
+  });
 
   function applyFlagUI(flagVal) {
     if (flagVal === 'chronic_if_gte_index') {
@@ -546,7 +605,6 @@ function renderQuestion(idx) {
   // Live updates
   qText.addEventListener('input', () => { questions[idx].text = qText.value; });
   qId.addEventListener('input',   () => { questions[idx].id = qId.value; });
-  qCrm.addEventListener('input',  () => { questions[idx].crm_field = qCrm.value; });
   qFlag.addEventListener('change', () => {
     const fv = qFlag.value;
     questions[idx].flag = fv;
@@ -694,7 +752,8 @@ function syncDomToState() {
     const q = questions[idx];
     q.text      = card.querySelector('.q-text')?.value ?? q.text;
     q.id        = card.querySelector('.q-id')?.value ?? q.id;
-    q.crm_field = card.querySelector('.q-crm')?.value ?? q.crm_field;
+    const crtSelect = card.querySelector('.q-crm-select');
+    q.crm_field = crtSelect?.value || q.crm_field;
     const flagEl = card.querySelector('.q-flag');
     if (flagEl) q.flag = flagEl.value;
     const flagParam = card.querySelector('.q-flag-param');
@@ -899,7 +958,8 @@ function buildJson() {
       result:           gv('crm-result'),
       is_chronic:       gv('crm-is_chronic'),
       failed_treatment: gv('crm-failed_treatment'),
-      source:           gv('crm-source')
+      source:           gv('crm-source'),
+      answers_json:     gv('crm-answers_json')
     }
   };
   return out;
