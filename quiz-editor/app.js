@@ -1028,7 +1028,7 @@ initAuthScreen();
       const opt = q.options[oi];
 
       // Record answer
-      answers[idx] = { qIdx: idx, optIdx: oi, score: opt.score || 0, value: opt.value, label: opt.label };
+      answers[idx] = { qIdx: idx, optIdx: oi, score: opt.score ?? 0, value: opt.value, label: opt.label };
 
       // Check flags
       if (q.flag === 'chronic_if_gte_index') {
@@ -1043,11 +1043,12 @@ initAuthScreen();
       btn.classList.add('selected');
 
       setTimeout(() => {
-        const next = idx + 1;
-        if (next < qp.questions.length) {
-          step = next;
-        } else {
+        // score=0 means disqualifying answer — skip to final immediately
+        if ((opt.score ?? 0) === 0) {
           step = 'email';
+        } else {
+          const next = idx + 1;
+          step = next < qp.questions.length ? next : 'email';
         }
         render();
       }, 320);
