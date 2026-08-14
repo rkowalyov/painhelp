@@ -769,8 +769,12 @@ async function sendToCRM(r) {
     }
   });
 
+  const resultLevel = getSortedScoringEntries(scenario.scoring).find(level => level.id === r.category)
+    || getSortedScoringEntries(scenario.scoring)[getSortedScoringEntries(scenario.scoring).length - 1];
+  const resultTitle = resultLevel?.title || r.category;
+
   if (f.score)            fields[f.score]            = r.score;
-  if (f.result)           fields[f.result]           = r.category;
+  if (f.result)           fields[f.result]           = resultTitle;
   if (f.is_chronic)       fields[f.is_chronic]       = r.isChronic ? "Y" : "N";
   if (f.failed_treatment) fields[f.failed_treatment] = r.failedTreatment ? "Y" : "N";
   if (f.source)           fields[f.source]           = source;
