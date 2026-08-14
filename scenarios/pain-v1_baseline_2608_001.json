@@ -143,6 +143,7 @@
     "result": "UF_CRM_1777993608",
     "is_chronic": "UF_CRM_1777993788",
     "failed_treatment": "UF_CRM_1777993848",
-    "source": "UF_CRM_1777993881"
+    "source": "UF_CRM_1777993881",
+    "answers_json": "UF_CRM_1786729063"
   }
 }
