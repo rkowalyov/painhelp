@@ -584,12 +584,12 @@ function renderQuestion(idx) {
   function applyFlagUI(flagVal) {
     if (flagVal === 'chronic_if_gte_index') {
       flagParamWrap.style.display = 'flex';
-      flagParamLabel.textContent = 'Порог индекса (chronic_threshold)';
+      flagParamLabel.textContent = 'Порог индекса';
       flagParam.value = q.chronic_threshold ?? '';
       flagParamHint.textContent = 'Флаг ставится если индекс выбранного варианта ≥ этого значения';
     } else if (flagVal === 'failed_treatment_if_value') {
       flagParamWrap.style.display = 'flex';
-      flagParamLabel.textContent = 'Значение ответа (failed_treatment_value)';
+      flagParamLabel.textContent = 'Значение ответа';
       flagParam.value = q.failed_treatment_value || '';
       flagParamHint.textContent = 'Флаг ставится если value ответа совпадает с этим значением';
     } else {
