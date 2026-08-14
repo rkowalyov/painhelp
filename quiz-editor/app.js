@@ -81,13 +81,16 @@ function initAuthScreen() {
   return false;
 }
 
-function initializeEditor() {
+async function initializeEditor() {
   // Эта функция вызывается после успешной авторизации
-  // Загружаем данные квиза
+  // Приоритет у параметра ?load, чтобы редактор открывал именно выбранный сценарий, а не старое состояние из localStorage
   let loadedData = null;
   if (getLoadParam()) {
-    console.log("[EDITOR] Loading from external source");
-    loadedData = loadFromSessionStorage();
+    console.log("[EDITOR] Loading scenario by URL param");
+    loadedData = await loadFromUrlScenario();
+    if (!loadedData) {
+      console.warn("[EDITOR] URL param provided but no scenario file was loaded; ignoring stale localStorage data");
+    }
   } else {
     loadedData = loadFromStorage();
     console.log("[EDITOR] Loaded from localStorage:", !!loadedData);
@@ -102,6 +105,36 @@ function initializeEditor() {
 function getLoadParam() {
   const params = new URLSearchParams(window.location.search);
   return params.get('load');
+}
+
+function normalizeLoadParam() {
+  const raw = (getLoadParam() || '').trim();
+  if (!raw) return '';
+  if (raw.includes('..')) return '';
+  const safe = raw.replace(/[^a-zA-Z0-9_.\-\/]/g, '');
+  return safe;
+}
+
+async function loadFromUrlScenario() {
+  const quizName = normalizeLoadParam();
+  if (!quizName) return null;
+
+  const scenarioFile = quizName.endsWith('.json') ? quizName : `${quizName}.json`;
+  const url = scenarioFile.startsWith('./') || scenarioFile.startsWith('/') || scenarioFile.includes('/')
+    ? scenarioFile
+    : `../scenarios/${scenarioFile}`;
+
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    localStorage.removeItem('quiz_editor_load');
+    console.log('[EDITOR] Loaded quiz from URL:', url);
+    return data;
+  } catch (e) {
+    console.error('[EDITOR] Failed to load quiz by URL:', e);
+    return null;
+  }
 }
 
 function loadFromSessionStorage() {
