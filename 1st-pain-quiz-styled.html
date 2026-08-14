@@ -567,6 +567,14 @@ function selectOption(qId, value, i) {
 function nextStep() {
   const idx = state.step;
   const total = scenario.questions.length;
+  const q = scenario.questions[idx];
+  const selectedVal = state.answers[q.id];
+  const selectedOpt = q.options && q.options.find(o => String(o.value) === String(selectedVal));
+  // score=0 means disqualifying answer — skip to final immediately
+  if (selectedOpt && selectedOpt.score === 0) {
+    showEmailScreen();
+    return;
+  }
   if (idx < total - 1) {
     state.step++;
     showQuestion(state.step);
