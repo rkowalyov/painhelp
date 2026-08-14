@@ -261,17 +261,13 @@ function renderScoringLevels() {
 }
 
 const TEMPLATE_CRM_FIELDS = [
-  { label: 'JSON ответов квиза — UF_CRM_1786729063', value: 'UF_CRM_1786729063' },
-  { label: 'Итоговый балл — UF_CRM_1777993552', value: 'UF_CRM_1777993552' },
-  { label: 'Результат — UF_CRM_1777993608', value: 'UF_CRM_1777993608' },
   { label: 'Насколько сильная боль — UF_CRM_1777993688', value: 'UF_CRM_1777993688' },
   { label: 'Где болит — UF_CRM_1777993643', value: 'UF_CRM_1777993643' },
   { label: 'Как давно появилась боль — UF_CRM_1777993660', value: 'UF_CRM_1777993660' },
   { label: 'Влияние боли на жизнь — UF_CRM_1777993717', value: 'UF_CRM_1777993717' },
   { label: 'Обращались к врачу — UF_CRM_1777993749', value: 'UF_CRM_1777993749' },
   { label: 'Хроническая боль — UF_CRM_1777993788', value: 'UF_CRM_1777993788' },
-  { label: 'Лечение не помогло — UF_CRM_1777993848', value: 'UF_CRM_1777993848' },
-  { label: 'Источник — UF_CRM_1777993881', value: 'UF_CRM_1777993881' }
+  { label: 'Лечение не помогло — UF_CRM_1777993848', value: 'UF_CRM_1777993848' }
 ];
 
 const DEFAULT_JSON = {
