@@ -159,88 +159,13 @@
   <section class="tab-panel" id="tab-scoring">
     <div class="panel-header">
       <h2>Результаты (скоринг)</h2>
-      <p>Настройте три уровня результатов по сумме баллов</p>
+      <p>Настройте произвольное число уровней результатов по сумме баллов</p>
     </div>
-    <div class="scoring-grid">
-      <div class="scoring-card low" data-level="low">
-        <div class="scoring-badge">Низкий</div>
-        <div class="field-group">
-          <label class="field-label">Макс. баллов (включительно)</label>
-          <input class="field-input" id="score-low-max" type="number" value="3" min="0" />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Заголовок результата</label>
-          <input class="field-input" id="score-low-title" type="text" placeholder="Серьёзных признаков не выявлено" />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Текст</label>
-          <textarea class="field-input field-textarea" id="score-low-text" placeholder="Описание результата..."></textarea>
-        </div>
-        <div class="field-group">
-          <label class="field-label">CTA кнопки</label>
-          <div class="cta-button-count-selector">
-            <span class="count-label">Количество:</span>
-            <button type="button" class="btn-count active" data-count="1">1</button>
-            <button type="button" class="btn-count" data-count="2">2</button>
-            <button type="button" class="btn-count" data-count="3">3</button>
-          </div>
-        </div>
-        <div class="cta-buttons-container" id="cta-low-container"></div>
-      </div>
-
-      <div class="scoring-card medium" data-level="medium">
-        <div class="scoring-badge">Средний</div>
-        <div class="field-group">
-          <label class="field-label">Макс. баллов (включительно)</label>
-          <input class="field-input" id="score-medium-max" type="number" value="7" min="0" />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Заголовок результата</label>
-          <input class="field-input" id="score-medium-title" type="text" placeholder="Боль требует внимания" />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Текст</label>
-          <textarea class="field-input field-textarea" id="score-medium-text" placeholder="Описание результата..."></textarea>
-        </div>
-        <div class="field-group">
-          <label class="field-label">CTA кнопки</label>
-          <div class="cta-button-count-selector">
-            <span class="count-label">Количество:</span>
-            <button type="button" class="btn-count active" data-count="1">1</button>
-            <button type="button" class="btn-count" data-count="2">2</button>
-            <button type="button" class="btn-count" data-count="3">3</button>
-          </div>
-        </div>
-        <div class="cta-buttons-container" id="cta-medium-container"></div>
-      </div>
-
-      <div class="scoring-card high" data-level="high">
-        <div class="scoring-badge">Высокий</div>
-        <div class="field-group">
-          <label class="field-label">Макс. баллов</label>
-          <input class="field-input" id="score-high-max" type="number" value="99" min="0" />
-          <span class="field-hint">Обычно 99 — для «всё что выше»</span>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Заголовок результата</label>
-          <input class="field-input" id="score-high-title" type="text" placeholder="Рекомендуем обратиться к специалисту" />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Текст</label>
-          <textarea class="field-input field-textarea" id="score-high-text" placeholder="Описание результата..."></textarea>
-        </div>
-        <div class="field-group">
-          <label class="field-label">CTA кнопки</label>
-          <div class="cta-button-count-selector">
-            <span class="count-label">Количество:</span>
-            <button type="button" class="btn-count active" data-count="1">1</button>
-            <button type="button" class="btn-count" data-count="2">2</button>
-            <button type="button" class="btn-count" data-count="3">3</button>
-          </div>
-        </div>
-        <div class="cta-buttons-container" id="cta-high-container"></div>
-      </div>
-    </div>
+    <div class="scoring-grid" id="scoring-levels"></div>
+    <button class="btn btn-outline add-btn" id="addScoringLevelBtn" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Добавить уровень
+    </button>
   </section>
 
   <!-- ===== TAB: CRM ===== -->

@@ -636,6 +636,35 @@ function submitEmail() {
 }
 
 /* ===================== SCORING ===================== */
+function getSortedScoringEntries(scoring) {
+  const entries = Object.entries(scoring || {}).map(([id, lvl]) => ({
+    id,
+    max: Number(lvl?.max),
+    title: lvl?.title || "",
+    text: lvl?.text || "",
+    cta: Array.isArray(lvl?.cta) ? lvl.cta : []
+  })).filter(lvl => Number.isFinite(lvl.max));
+
+  if (!entries.length) {
+    return [
+      { id: "low", max: 3, title: "", text: "", cta: [] },
+      { id: "medium", max: 7, title: "", text: "", cta: [] },
+      { id: "high", max: 99, title: "", text: "", cta: [] }
+    ];
+  }
+
+  entries.sort((a, b) => a.max - b.max);
+  return entries;
+}
+
+function scoringToneByIndex(index, total) {
+  if (total <= 1) return "high";
+  const ratio = index / (total - 1);
+  if (ratio < 1 / 3) return "low";
+  if (ratio < 2 / 3) return "medium";
+  return "high";
+}
+
 function calcResult() {
   const qs = scenario.questions;
   let score = 0;
@@ -658,10 +687,14 @@ function calcResult() {
     }
   });
 
-  const sc = scenario.scoring;
-  let category = "high";
-  if (score <= sc.low.max) category = "low";
-  else if (score <= sc.medium.max) category = "medium";
+  const levels = getSortedScoringEntries(scenario.scoring);
+  let category = levels[levels.length - 1].id;
+  for (const lvl of levels) {
+    if (score <= lvl.max) {
+      category = lvl.id;
+      break;
+    }
+  }
 
   return { score, category, isChronic, failedTreatment, crm_answers };
 }
@@ -669,8 +702,11 @@ function calcResult() {
 /* ===================== RESULT ===================== */
 function showResult(r) {
   setProgress(100);
-  const s = scenario.scoring[r.category];
-  const labels = { low: "Низкий риск", medium: "Средний риск", high: "Высокий риск" };
+  const levels = getSortedScoringEntries(scenario.scoring);
+  const idx = levels.findIndex(l => l.id === r.category);
+  const fallback = levels[levels.length - 1] || { title: "", text: "", cta: [] };
+  const s = levels[idx] || fallback;
+  const tone = scoringToneByIndex(idx < 0 ? levels.length - 1 : idx, levels.length);
 
   const flags = [];
   if (r.isChronic) flags.push("⚠️ Возможна хроническая боль");
@@ -689,7 +725,7 @@ function showResult(r) {
   }).join("");
 
   document.getElementById("screen-result").innerHTML = `
-    <span class="result-badge ${r.category}">${labels[r.category]}</span>
+    <span class="result-badge ${tone}">${s.title || "Результат"}</span>
     <p class="result-score">Ваш результат: ${r.score} балл${r.score === 1 ? "" : r.score < 5 ? "а" : "ов"}</p>
     <h2 class="result-title">${s.title}</h2>
     <p class="result-text">${s.text}</p>

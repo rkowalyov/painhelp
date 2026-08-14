@@ -123,6 +123,109 @@ function loadFromSessionStorage() {
 
 // ---------- STATE ----------
 let questions = [];
+let scoringLevels = [];
+
+function scoringToneByIndex(index, total) {
+  if (total <= 1) return 'high';
+  const ratio = index / (total - 1);
+  if (ratio < 1 / 3) return 'low';
+  if (ratio < 2 / 3) return 'medium';
+  return 'high';
+}
+
+function normalizeScoring(scoring) {
+  const raw = [];
+  if (Array.isArray(scoring)) {
+    scoring.forEach((lvl, i) => {
+      if (!lvl || typeof lvl !== 'object') return;
+      raw.push({
+        id: lvl.id || `level_${i + 1}`,
+        max: Number(lvl.max),
+        title: lvl.title || '',
+        text: lvl.text || '',
+        cta: Array.isArray(lvl.cta) ? lvl.cta : []
+      });
+    });
+  } else if (scoring && typeof scoring === 'object') {
+    Object.entries(scoring).forEach(([id, lvl], i) => {
+      const src = (lvl && typeof lvl === 'object') ? lvl : {};
+      raw.push({
+        id: id || `level_${i + 1}`,
+        max: Number(src.max),
+        title: src.title || '',
+        text: src.text || '',
+        cta: Array.isArray(src.cta) ? src.cta : []
+      });
+    });
+  }
+
+  const safe = raw.filter(lvl => Number.isFinite(lvl.max));
+  if (!safe.length) {
+    return [
+      { id: 'low', max: 3, title: '', text: '', cta: [] },
+      { id: 'medium', max: 7, title: '', text: '', cta: [] },
+      { id: 'high', max: 99, title: '', text: '', cta: [] }
+    ];
+  }
+
+  safe.sort((a, b) => a.max - b.max);
+  return safe;
+}
+
+function nextScoringLevelId() {
+  let n = scoringLevels.length + 1;
+  const used = new Set(scoringLevels.map(l => l.id));
+  while (used.has(`level_${n}`)) n++;
+  return `level_${n}`;
+}
+
+function renderScoringLevels() {
+  const wrap = document.getElementById('scoring-levels');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  scoringLevels.forEach((lvl, idx) => {
+    const tone = scoringToneByIndex(idx, scoringLevels.length);
+    const card = document.createElement('div');
+    card.className = `scoring-card ${tone}`;
+    card.dataset.level = lvl.id;
+
+    card.innerHTML = `
+      <div class="scoring-badge">Уровень ${idx + 1}</div>
+      <div class="field-group">
+        <label class="field-label">Ключ уровня</label>
+        <input class="field-input" type="text" value="${lvl.id}" readonly />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Макс. баллов (включительно)</label>
+        <input class="field-input score-max" type="number" value="${Number.isFinite(lvl.max) ? lvl.max : ''}" min="0" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Заголовок результата</label>
+        <input class="field-input score-title" type="text" value="${lvl.title || ''}" placeholder="Заголовок" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Текст</label>
+        <textarea class="field-input field-textarea score-text" placeholder="Описание результата...">${lvl.text || ''}</textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">CTA кнопки</label>
+        <div class="cta-button-count-selector">
+          <span class="count-label">Количество:</span>
+          <button type="button" class="btn-count active" data-count="1">1</button>
+          <button type="button" class="btn-count" data-count="2">2</button>
+          <button type="button" class="btn-count" data-count="3">3</button>
+        </div>
+      </div>
+      <div class="cta-buttons-container" id="cta-${lvl.id}-container"></div>
+      <button type="button" class="btn btn-outline remove-scoring-level" ${scoringLevels.length <= 1 ? 'disabled' : ''}>Удалить уровень</button>
+    `;
+    wrap.appendChild(card);
+
+    const ctaCount = Math.min(Math.max((lvl.cta || []).length, 1), 3);
+    renderCtaButtons(lvl.id, ctaCount, lvl.cta || []);
+  });
+}
 
 const DEFAULT_JSON = {
   meta: {
@@ -271,7 +374,7 @@ function renderCtaButtons(level, count, existingCta) {
   // Рендерить поля для каждой кнопки
   for (let i = 0; i < count; i++) {
     const cta = existingCta?.[i];
-    const text = (typeof cta === 'object' && cta?.text) ? cta.text : '';
+    const text = (typeof cta === 'object' && cta?.text) ? cta.text : (typeof cta === 'string' ? cta : '');
     const url = (typeof cta === 'object' && cta?.url) ? cta.url : '';
     
     const row = document.createElement('div');
@@ -318,23 +421,8 @@ function loadFromObject(data) {
   setVal('meta-trust_badges', Array.isArray(m.trust_badges) ? m.trust_badges.join(', ') : (m.trust_badges || ''));
 
   // Scoring
-  const s = data.scoring || {};
-  ['low','medium','high'].forEach(lvl => {
-    const sc = s[lvl] || {};
-    setVal(`score-${lvl}-max`, sc.max ?? '');
-    setVal(`score-${lvl}-title`, sc.title || '');
-    setVal(`score-${lvl}-text`, sc.text || '');
-    
-    // Обработать CTA: может быть массив объектов {text, url} или старый формат
-    let cta = sc.cta || [];
-    let ctaCount = 1;
-    if (Array.isArray(cta)) {
-      ctaCount = Math.min(Math.max(cta.length, 1), 3);
-    }
-    
-    // Рендерить CTA элементы
-    renderCtaButtons(lvl, ctaCount, cta);
-  });
+  scoringLevels = normalizeScoring(data.scoring || {});
+  renderScoringLevels();
 
   // CRM fields
   const c = data.crm_fields || {};
@@ -731,6 +819,18 @@ function buildJson() {
     return cta;
   };
 
+  const scoringOut = {};
+  document.querySelectorAll('.scoring-card').forEach((card, idx) => {
+    const levelId = card.dataset.level || `level_${idx + 1}`;
+    const max = parseInt(card.querySelector('.score-max')?.value, 10);
+    scoringOut[levelId] = {
+      max: Number.isFinite(max) ? max : 0,
+      title: card.querySelector('.score-title')?.value?.trim() || '',
+      text: card.querySelector('.score-text')?.value?.trim() || '',
+      cta: getCtaFromDom(levelId)
+    };
+  });
+
   const out = {
     meta: {
       title:          gv('meta-title'),
@@ -760,26 +860,7 @@ function buildJson() {
       }
       return obj;
     }),
-    scoring: {
-      low: {
-        max:   parseInt(gv('score-low-max')) || 0,
-        title: gv('score-low-title'),
-        text:  gv('score-low-text'),
-        cta:   getCtaFromDom('low')
-      },
-      medium: {
-        max:   parseInt(gv('score-medium-max')) || 0,
-        title: gv('score-medium-title'),
-        text:  gv('score-medium-text'),
-        cta:   getCtaFromDom('medium')
-      },
-      high: {
-        max:   parseInt(gv('score-high-max')) || 99,
-        title: gv('score-high-title'),
-        text:  gv('score-high-text'),
-        cta:   getCtaFromDom('high')
-      }
-    },
+    scoring: scoringOut,
     crm_fields: {
       score:            gv('crm-score'),
       result:           gv('crm-result'),
@@ -899,6 +980,18 @@ mainEl.addEventListener('click',  (e) => {
       renderCtaButtons(level, count, []);
     }
   }
+  if (e.target.id === 'addScoringLevelBtn') {
+    scoringLevels.push({ id: nextScoringLevelId(), max: 99, title: '', text: '', cta: [] });
+    renderScoringLevels();
+  }
+  if (e.target.classList.contains('remove-scoring-level')) {
+    const card = e.target.closest('.scoring-card');
+    if (card) {
+      const level = card.dataset.level;
+      scoringLevels = scoringLevels.filter(l => l.id !== level);
+      renderScoringLevels();
+    }
+  }
   scheduleSave();
 });
 
@@ -948,6 +1041,23 @@ initAuthScreen();
   let totalScore = 0;
   let isChronicFlag = false;
   let failedTreatmentFlag = false;
+
+  function getSortedScoringEntries(scoring) {
+    return normalizeScoring(scoring || {});
+  }
+
+  function resolvePreviewLevel(score, scoring) {
+    const levels = getSortedScoringEntries(scoring);
+    let chosen = levels[levels.length - 1] || { id: 'high', max: 99, title: '', text: '', cta: [] };
+    for (const lvl of levels) {
+      if (score <= lvl.max) {
+        chosen = lvl;
+        break;
+      }
+    }
+    const idx = levels.findIndex(l => l.id === chosen.id);
+    return { level: chosen, tone: scoringToneByIndex(idx < 0 ? levels.length - 1 : idx, levels.length) };
+  }
 
   // Render fresh every time the tab is opened
   document.querySelector('[data-tab="quizpreview"]').addEventListener('click', () => {
@@ -1083,15 +1193,13 @@ initAuthScreen();
 
   // ---- RESULT SCREEN ----
   function renderResult() {
-    const sc = qp.scoring || {};
-    let level = 'high';
-    if (totalScore <= (sc.low?.max ?? 3))    level = 'low';
-    else if (totalScore <= (sc.medium?.max ?? 7)) level = 'medium';
-
-    const levelData = sc[level] || {};
-    const ctas = (levelData.cta || []).map(c =>
-      `<button class="qp-cta-btn">${esc(c)}</button>`
-    ).join('');
+    const resolved = resolvePreviewLevel(totalScore, qp.scoring || {});
+    const levelData = resolved.level || {};
+    const tone = resolved.tone || 'high';
+    const ctas = (levelData.cta || []).map(c => {
+      const text = (typeof c === 'object' && c?.text) ? c.text : c;
+      return `<button class="qp-cta-btn">${esc(text)}</button>`;
+    }).join('');
 
     // Flags display
     const flagChips = [];
@@ -1103,8 +1211,8 @@ initAuthScreen();
 
     screen.innerHTML = `
       <div class="qp-result">
-        <div class="qp-result-score-ring ${level}-ring">
-          <span class="qp-score-num ${level}">${totalScore}</span>
+        <div class="qp-result-score-ring ${tone}-ring">
+          <span class="qp-score-num ${tone}">${totalScore}</span>
           <span class="qp-score-label">баллов</span>
         </div>
         <div class="qp-result-title">${esc(levelData.title || '')}</div>
