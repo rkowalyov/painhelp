@@ -99,6 +99,7 @@ async function initializeEditor() {
   // Загружаем данные
   console.log("[EDITOR] Using data:", loadedData ? "external/saved" : "default");
   loadFromObject(loadedData || DEFAULT_JSON);
+  initFieldHelp();
 }
 
 // ---------- LOAD FROM EXTERNAL SOURCE ----------
@@ -493,6 +494,176 @@ function loadFromObject(data) {
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (el) el.value = val;
+}
+
+function initFieldHelp() {
+  const popover = document.getElementById('fieldHelpPopover');
+  if (!popover) return;
+
+  const helpMap = {
+    'meta-title': {
+      title: 'Главный заголовок квиза',
+      text: 'Это текст, который видит пользователь на самом первом экране. Он задаёт общий смысл теста и должен сразу объяснять, зачем проходить опрос.',
+      target: 'hero'
+    },
+    'meta-subtitle': {
+      title: 'Подзаголовок',
+      text: 'Короткое пояснение про пользу от прохождения: что получит пользователь в итоге, сколько времени займёт и зачем это нужно.',
+      target: 'hero'
+    },
+    'meta-cta_start': {
+      title: 'Кнопка старта',
+      text: 'Текст на кнопке запуска квиза. Обычно это короткий призыв вроде «Пройти тест» или «Проверить состояние».',
+      target: 'cta'
+    },
+    'meta-source_label': {
+      title: 'Метка источника в CRM',
+      text: 'Эта надпись отмечает, откуда пришёл лид и какой вариант квиза был запущен. В Bitrix она обычно хранится как название источника или кампании.',
+      target: 'hero'
+    },
+    'meta-email_title': {
+      title: 'Заголовок экрана email',
+      text: 'Сообщение перед формой email. Оно объясняет, почему стоит оставить контакты, чтобы получить результат и рекомендации.',
+      target: 'hero'
+    },
+    'meta-email_subtitle': {
+      title: 'Подзаголовок экрана email',
+      text: 'Дополнительное пояснение к запросу email. Оно снижает тревожность и делает мотивацию более понятной.',
+      target: 'hero'
+    },
+    'meta-email_fear': {
+      title: 'Fear-фраза',
+      text: 'Фраза-мотиватор, которая усиливает ценность результата и помогает пользователю понять важность получения рекомендаций.',
+      target: 'hero'
+    },
+    'meta-trust_badges': {
+      title: 'Метки доверия',
+      text: 'Список коротких тезисов под заголовком: «Без регистрации», «Анонимно», «Основано на опыте врачей» и т.п. Они повышают доверие к квизу.',
+      target: 'hero'
+    },
+    'q-text': {
+      title: 'Текст вопроса',
+      text: 'Формулировка, которую видит пользователь в интерфейсе квиза. Важно, чтобы вопрос был понятным, конкретным и без двусмысленностей.',
+      target: 'block'
+    },
+    'q-id': {
+      title: 'ID вопроса',
+      text: 'Внутренний идентификатор вопроса. Он используется в JSON, в логике подсчёта и в маппинге на CRM-поля. Пользователю не показывается.',
+      target: 'block'
+    },
+    'q-crm-select': {
+      title: 'CRM-поле ответа',
+      text: 'Это Bitrix-значение, в которое сохраняется выбор пользователя для данного вопроса. Каждый вопрос обычно связан с отдельным UF_CRM_... полем.',
+      target: 'block'
+    },
+    'q-flag': {
+      title: 'Флаг условия',
+      text: 'Автоматически ставит диагностический маркер по ответу: например, хроническая боль или отсутствие эффекта от лечения.',
+      target: 'cta'
+    },
+    'q-flag-param': {
+      title: 'Параметр флага',
+      text: 'Значение для сравнения: порог индекса или конкретный ответ, при котором срабатывает условный флаг. Например, «более 6 месяцев» или «no_result».',
+      target: 'cta'
+    },
+    'crm-score': {
+      title: 'Итоговый балл',
+      text: 'Числовой итог score по всем ответам пользователя. Это число используется для выбора уровня результата: low / medium / high.',
+      target: 'block'
+    },
+    'crm-result': {
+      title: 'Текст результата',
+      text: 'CRM-поле, в которое отправляется итоговый заголовок выбранного уровня: например «Боль требует внимания» или «Рекомендуем обратиться к специалисту».',
+      target: 'hero'
+    },
+    'crm-is_chronic': {
+      title: 'Флаг «хроническая боль»',
+      text: 'Булевый флаг Y/N. Он автоматически ставится, если условие по вопросу сработало: например, боль длится долго или индекс выше порога.',
+      target: 'cta'
+    },
+    'crm-failed_treatment': {
+      title: 'Флаг «неуспешное лечение»',
+      text: 'Булевый флаг Y/N. Он сигнализирует, что пользователь уже обращался за помощью, но лечение не дало результата.',
+      target: 'cta'
+    },
+    'crm-source': {
+      title: 'Источник лида',
+      text: 'Код или метка, откуда пришёл пользователь: тип квиза, источник трафика, канал или конкретная кампания.',
+      target: 'hero'
+    },
+    'crm-answers_json': {
+      title: 'JSON ответов квиза',
+      text: 'один JSON со всеми ответами пользователя. Он нужен для аналитики, отладки и дальнейшей обработки в CRM без потери структуры ответов.',
+      target: 'block'
+    }
+  };
+
+  const labels = document.querySelectorAll('[data-help-id]');
+  labels.forEach((label) => {
+    const helper = document.createElement('button');
+    helper.type = 'button';
+    helper.className = 'field-help-btn';
+    helper.setAttribute('aria-label', 'Показать подсказку');
+    helper.textContent = '?';
+    helper.addEventListener('mouseenter', (event) => showFieldHelp(event, label.dataset.helpId));
+    helper.addEventListener('focus', (event) => showFieldHelp(event, label.dataset.helpId));
+    helper.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const id = label.dataset.helpId;
+      if (popover.dataset.active === id && popover.classList.contains('is-visible')) {
+        hideFieldHelp();
+        return;
+      }
+      showFieldHelp(event, id);
+    });
+    label.appendChild(helper);
+  });
+
+  function showFieldHelp(event, key) {
+    const config = helpMap[key] || { title: 'Подсказка', text: 'Описание будет добавлено позже.', target: 'block' };
+    const targetClass = config.target === 'hero' ? 'target' : config.target === 'cta' ? 'target' : 'target';
+    popover.innerHTML = `
+      <div class="field-help-preview">
+        <div class="field-help-phone">
+          <div class="field-help-topbar"><span><span class="field-help-dot"></span> Quiz</span><span>preview</span></div>
+          <div class="field-help-hero ${targetClass}"></div>
+          <div class="field-help-block ${targetClass}"></div>
+          <div class="field-help-block"></div>
+          <div class="field-help-cta ${targetClass}"></div>
+        </div>
+      </div>
+      <div class="field-help-copy">
+        <strong>${config.title}</strong>
+        ${config.text}
+      </div>
+    `;
+
+    const rect = (event.target || event.currentTarget || document.body).getBoundingClientRect();
+    const left = Math.min(window.innerWidth - 340, rect.left + 18);
+    const top = Math.min(window.innerHeight - 240, rect.bottom + 12);
+    popover.style.left = `${Math.max(12, left)}px`;
+    popover.style.top = `${Math.max(12, top)}px`;
+    popover.dataset.active = key;
+    popover.classList.add('is-visible');
+  }
+
+  function hideFieldHelp() {
+    popover.classList.remove('is-visible');
+    delete popover.dataset.active;
+  }
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.field-help-btn') && !event.target.closest('.field-help-popover')) {
+      hideFieldHelp();
+    }
+  });
+
+  document.addEventListener('mouseleave', (event) => {
+    if (event.target && event.target.classList && event.target.classList.contains('field-help-btn')) {
+      hideFieldHelp();
+    }
+  });
 }
 
 // ---------- QUESTIONS RENDER ----------

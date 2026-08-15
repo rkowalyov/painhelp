@@ -107,35 +107,35 @@
     </div>
     <div class="form-grid">
       <div class="field-group span-2">
-        <label class="field-label">Заголовок квиза</label>
+        <label class="field-label" data-help-id="meta-title">Заголовок квиза</label>
         <input class="field-input" id="meta-title" type="text" placeholder="Проверьте свою боль за минуту" />
       </div>
       <div class="field-group span-2">
-        <label class="field-label">Подзаголовок</label>
+        <label class="field-label" data-help-id="meta-subtitle">Подзаголовок</label>
         <input class="field-input" id="meta-subtitle" type="text" placeholder="Ответьте на 5 вопросов и получите понимание..." />
       </div>
       <div class="field-group">
-        <label class="field-label">Текст кнопки старта</label>
+        <label class="field-label" data-help-id="meta-cta_start">Текст кнопки старта</label>
         <input class="field-input" id="meta-cta_start" type="text" placeholder="Пройти тест" />
       </div>
       <div class="field-group">
-        <label class="field-label">Метка источника (CRM)</label>
+        <label class="field-label" data-help-id="meta-source_label">Метка источника (CRM)</label>
         <input class="field-input" id="meta-source_label" type="text" placeholder="Тест Квиз 26_05_07" />
       </div>
       <div class="field-group span-2">
-        <label class="field-label">Заголовок экрана email</label>
+        <label class="field-label" data-help-id="meta-email_title">Заголовок экрана email</label>
         <input class="field-input" id="meta-email_title" type="text" placeholder="Мы почти готовы показать результат" />
       </div>
       <div class="field-group span-2">
-        <label class="field-label">Подзаголовок экрана email</label>
+        <label class="field-label" data-help-id="meta-email_subtitle">Подзаголовок экрана email</label>
         <input class="field-input" id="meta-email_subtitle" type="text" placeholder="Оставьте email, чтобы получить результат..." />
       </div>
       <div class="field-group span-2">
-        <label class="field-label">Fear-фраза (мотивация оставить email)</label>
+        <label class="field-label" data-help-id="meta-email_fear">Fear-фраза (мотивация оставить email)</label>
         <input class="field-input" id="meta-email_fear" type="text" placeholder="Боль, которая длится долго, может становиться хронической" />
       </div>
       <div class="field-group span-2">
-        <label class="field-label">Метки доверия (через запятую)</label>
+        <label class="field-label" data-help-id="meta-trust_badges">Метки доверия (через запятую)</label>
         <input class="field-input" id="meta-trust_badges" type="text" placeholder="Без регистрации, Анонимно, Основано на опыте врачей" />
         <span class="field-hint">Разделяйте запятой. Отображаются под заголовком квиза.</span>
       </div>
@@ -180,27 +180,27 @@
     </div>
     <div class="form-grid">
       <div class="field-group">
-        <label class="field-label">Итоговый балл</label>
+        <label class="field-label" data-help-id="crm-score">Итоговый балл</label>
         <input class="field-input" id="crm-score" type="text" placeholder="UF_CRM_1777993552" />
       </div>
       <div class="field-group">
-        <label class="field-label">Текст результата</label>
+        <label class="field-label" data-help-id="crm-result">Текст результата</label>
         <input class="field-input" id="crm-result" type="text" placeholder="UF_CRM_1777993608" />
       </div>
       <div class="field-group">
-        <label class="field-label">Флаг «хроническая боль»</label>
+        <label class="field-label" data-help-id="crm-is_chronic">Флаг «хроническая боль»</label>
         <input class="field-input" id="crm-is_chronic" type="text" placeholder="UF_CRM_1777993788" />
       </div>
       <div class="field-group">
-        <label class="field-label">Флаг «неуспешное лечение»</label>
+        <label class="field-label" data-help-id="crm-failed_treatment">Флаг «неуспешное лечение»</label>
         <input class="field-input" id="crm-failed_treatment" type="text" placeholder="UF_CRM_1777993848" />
       </div>
       <div class="field-group">
-        <label class="field-label">Источник (source)</label>
+        <label class="field-label" data-help-id="crm-source">Источник (source)</label>
         <input class="field-input" id="crm-source" type="text" placeholder="UF_CRM_1777993881" />
       </div>
       <div class="field-group">
-        <label class="field-label">JSON ответов квиза</label>
+        <label class="field-label" data-help-id="crm-answers_json">JSON ответов квиза</label>
         <input class="field-input" id="crm-answers_json" type="text" placeholder="UF_CRM_1786729063" />
       </div>
     </div>
@@ -260,6 +260,7 @@
     <pre class="json-preview" id="jsonPreview"></pre>
   </section>
 </main>
+<div id="fieldHelpPopover" class="field-help-popover" role="dialog" aria-live="polite" aria-label="Подсказка по полю"></div>
 
 </div><!-- end editorContainer -->
 
@@ -294,21 +295,21 @@
     <div class="question-body">
       <div class="form-grid">
         <div class="field-group span-2">
-          <label class="field-label">Текст вопроса</label>
+          <label class="field-label" data-help-id="q-text">Текст вопроса</label>
           <input class="field-input q-text" type="text" placeholder="Введите вопрос..." />
         </div>
         <div class="field-group">
-          <label class="field-label">ID вопроса</label>
+          <label class="field-label" data-help-id="q-id">ID вопроса</label>
           <input class="field-input q-id" type="text" placeholder="pain_location" />
         </div>
         <div class="field-group">
-          <label class="field-label">CRM-поле для ответа</label>
+          <label class="field-label" data-help-id="q-crm-select">CRM-поле для ответа</label>
           <select class="field-input q-crm-select">
             <option value="">— не указано —</option>
           </select>
         </div>
         <div class="field-group">
-          <label class="field-label">Флаг</label>
+          <label class="field-label" data-help-id="q-flag">Флаг</label>
           <select class="field-input q-flag">
             <option value="">— нет флага —</option>
             <option value="chronic_if_gte_index">— да — выбранное значение больше или равно</option>
@@ -316,7 +317,7 @@
           </select>
         </div>
         <div class="field-group q-flag-param-wrap" style="display:none">
-          <label class="field-label q-flag-param-label">Параметр флага</label>
+          <label class="field-label q-flag-param-label" data-help-id="q-flag-param">Параметр флага</label>
           <input class="field-input q-flag-param" type="text" placeholder="" />
           <span class="field-hint q-flag-param-hint"></span>
         </div>
