@@ -626,45 +626,58 @@ function initFieldHelp() {
       switch (config.target) {
         case 'hero':
           return `
-            <div class="field-help-figure field-help-figure-hero">
-              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Quiz</span><span>preview</span></div>
-              <div class="field-help-pill">Доверие</div>
-              <div class="field-help-hero target"></div>
-              <div class="field-help-block"></div>
-              <div class="field-help-block short"></div>
-              <div class="field-help-cta primary target"></div>
+            <div class="field-help-screen field-help-screen-hero">
+              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>start</span></div>
+              <div class="field-help-screen-hero-card">
+                <div class="field-help-screen-badges">
+                  <span class="field-help-screen-badge">Без регистрации</span>
+                  <span class="field-help-screen-badge">Анонимно</span>
+                </div>
+                <div class="field-help-screen-title target"></div>
+                <div class="field-help-screen-subtitle"></div>
+                <div class="field-help-screen-subtitle short"></div>
+                <div class="field-help-screen-button target"></div>
+              </div>
             </div>
           `;
         case 'cta':
           return `
-            <div class="field-help-figure field-help-figure-cta">
-              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Action</span><span>UI</span></div>
-              <div class="field-help-cta-row">
-                <div class="field-help-cta target"></div>
-                <div class="field-help-cta muted"></div>
+            <div class="field-help-screen field-help-screen-cta">
+              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>result</span></div>
+              <div class="field-help-screen-cta-card">
+                <div class="field-help-screen-line wide"></div>
+                <div class="field-help-screen-line"></div>
+                <div class="field-help-screen-button target"></div>
+                <div class="field-help-screen-button secondary"></div>
               </div>
             </div>
           `;
+        case 'block':
         case 'question':
           return `
-            <div class="field-help-figure field-help-figure-question">
-              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Question</span><span>step</span></div>
-              <div class="field-help-question-title target"></div>
-              <div class="field-help-option-list">
-                <div class="field-help-option target"></div>
-                <div class="field-help-option"></div>
-                <div class="field-help-option"></div>
+            <div class="field-help-screen field-help-screen-question">
+              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>step 2/5</span></div>
+              <div class="field-help-screen-progress"><span></span></div>
+              <div class="field-help-screen-card">
+                <div class="field-help-screen-card-label"></div>
+                <div class="field-help-screen-question-title target"></div>
+                <div class="field-help-screen-option target"></div>
+                <div class="field-help-screen-option"></div>
+                <div class="field-help-screen-option"></div>
               </div>
             </div>
           `;
         case 'field':
         default:
           return `
-            <div class="field-help-figure field-help-figure-field">
-              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Form</span><span>field</span></div>
-              <div class="field-help-form-label"></div>
-              <div class="field-help-form-input target"></div>
-              <div class="field-help-form-small"></div>
+            <div class="field-help-screen field-help-screen-form">
+              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>email</span></div>
+              <div class="field-help-screen-form-card">
+                <div class="field-help-screen-form-label"></div>
+                <div class="field-help-screen-form-input target"></div>
+                <div class="field-help-screen-small-line"></div>
+                <div class="field-help-screen-button footer"></div>
+              </div>
             </div>
           `;
       }

@@ -367,11 +367,11 @@ button { cursor: pointer; background: none; border: none; }
   margin-bottom: var(--space-3);
 }
 .field-help-phone {
-  background: var(--color-surface-offset);
+  background: linear-gradient(180deg, #f8fbff, #eef4ff);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
-  min-height: 132px;
+  min-height: 162px;
 }
 .field-help-topbar {
   display: flex;
@@ -388,92 +388,149 @@ button { cursor: pointer; background: none; border: none; }
   background: var(--color-primary);
   display: inline-block;
 }
-.field-help-figure {
+.field-help-screen {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  min-height: 128px;
+  padding: 4px 0;
+  color: var(--color-text);
 }
-.field-help-pill {
-  width: fit-content;
-  padding: 3px 8px;
-  border-radius: 999px;
+.field-help-screen-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 9px;
-  line-height: 1;
-  color: var(--color-primary);
-  background: var(--color-primary-highlight);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
-.field-help-hero,
-.field-help-block,
-.field-help-cta,
-.field-help-question-title,
-.field-help-form-label,
-.field-help-form-input,
-.field-help-form-small,
-.field-help-option {
+.field-help-screen-brand {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.field-help-screen-hero-card,
+.field-help-screen-cta-card,
+.field-help-screen-card,
+.field-help-screen-form-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.field-help-screen-badges {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+.field-help-screen-badge {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 8px;
+  background: rgba(1, 105, 111, 0.08);
+  color: var(--color-primary);
+  border: 1px solid rgba(1, 105, 111, 0.12);
+}
+.field-help-screen-title,
+.field-help-screen-subtitle,
+.field-help-screen-card-label,
+.field-help-screen-question-title,
+.field-help-screen-form-label,
+.field-help-screen-form-input,
+.field-help-screen-small-line,
+.field-help-screen-option,
+.field-help-screen-button,
+.field-help-screen-line,
+.field-help-screen-progress {
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
 }
-.field-help-hero {
+.field-help-screen-title {
   height: 18px;
+  width: 88%;
   background: var(--color-primary-highlight);
 }
-.field-help-hero.target,
-.field-help-block.target,
-.field-help-cta.target,
-.field-help-question-title.target,
-.field-help-form-input.target,
-.field-help-option.target {
+.field-help-screen-subtitle {
+  height: 11px;
+  width: 72%;
+}
+.field-help-screen-subtitle.short {
+  width: 58%;
+}
+.field-help-screen-progress {
+  height: 6px;
+  width: 100%;
+  background: rgba(148, 163, 184, 0.15);
+  border: none;
+  overflow: hidden;
+}
+.field-help-screen-progress span {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: inherit;
+}
+.field-help-screen-card-label {
+  height: 8px;
+  width: 46%;
+}
+.field-help-screen-question-title {
+  height: 14px;
+  width: 78%;
+}
+.field-help-screen-option {
+  height: 14px;
+}
+.field-help-screen-form-label {
+  height: 9px;
+  width: 52%;
+}
+.field-help-screen-form-input {
+  height: 22px;
+}
+.field-help-screen-small-line {
+  height: 9px;
+  width: 40%;
+}
+.field-help-screen-line {
+  height: 10px;
+  width: 62%;
+}
+.field-help-screen-line.wide {
+  width: 82%;
+}
+.field-help-screen-button {
+  height: 26px;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+.field-help-screen-button.secondary {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+.field-help-screen-button.footer {
+  width: 68%;
+  align-self: flex-end;
+}
+.field-help-screen-title.target,
+.field-help-screen-button.target,
+.field-help-screen-question-title.target,
+.field-help-screen-option.target,
+.field-help-screen-form-input.target {
   position: relative;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.45);
   border-color: var(--color-primary);
   background: var(--color-primary-highlight);
-}
-.field-help-block {
-  height: 12px;
-}
-.field-help-block.short {
-  width: 68%;
-}
-.field-help-cta {
-  height: 22px;
-  border-radius: var(--radius-full);
-}
-.field-help-cta.primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-.field-help-cta-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2);
-}
-.field-help-cta.muted {
-  background: var(--color-surface);
-}
-.field-help-question-title {
-  height: 16px;
-  width: 72%;
-}
-.field-help-option-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.field-help-option {
-  height: 12px;
-}
-.field-help-form-label {
-  height: 10px;
-  width: 52%;
-}
-.field-help-form-input {
-  height: 22px;
-}
-.field-help-form-small {
-  height: 9px;
-  width: 36%;
 }
 .field-help-copy {
   font-size: var(--text-sm);
