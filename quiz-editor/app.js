@@ -639,7 +639,7 @@ function initFieldHelp() {
                 <div class="field-help-real-subtitle short"></div>
                 <div class="field-help-real-button target"></div>
               </div>
-              <div class="field-help-real-context">дальше / ниже</div>
+              <div class="field-help-real-context">джерело / вокруг</div>
             </div>
           `;
         case 'cta':
@@ -647,10 +647,11 @@ function initFieldHelp() {
             <div class="field-help-real field-help-real-result">
               <div class="field-help-real-topbar"><span>painhelp</span><span>result</span></div>
               <div class="field-help-real-progress"><span style="width:100%"></span></div>
-              <div class="field-help-real-card">
+              <div class="field-help-real-card result-card">
                 <div class="field-help-real-badge tiny"></div>
                 <div class="field-help-real-title small"></div>
                 <div class="field-help-real-subtitle longer"></div>
+                <div class="field-help-real-subtitle"></div>
                 <div class="field-help-real-cta-row">
                   <div class="field-help-real-button target"></div>
                   <div class="field-help-real-button secondary"></div>
@@ -664,7 +665,7 @@ function initFieldHelp() {
             <div class="field-help-real field-help-real-question">
               <div class="field-help-real-topbar"><span>painhelp</span><span>step 2/5</span></div>
               <div class="field-help-real-progress"><span style="width:40%"></span></div>
-              <div class="field-help-real-card">
+              <div class="field-help-real-card question-card">
                 <div class="field-help-real-label"></div>
                 <div class="field-help-real-question-title target"></div>
                 <div class="field-help-real-option selected target"></div>
@@ -678,12 +679,13 @@ function initFieldHelp() {
           return `
             <div class="field-help-real field-help-real-logic">
               <div class="field-help-real-topbar"><span>painhelp</span><span>logic</span></div>
-              <div class="field-help-real-card">
+              <div class="field-help-real-card logic-card">
                 <div class="field-help-real-rule target">if score ≥ 7</div>
                 <div class="field-help-real-rule-row">
                   <span class="field-help-real-rule-line"></span>
                   <span class="field-help-real-rule-line short"></span>
                 </div>
+                <div class="field-help-real-rule-line short"></div>
               </div>
               <div class="field-help-real-context">рядом с вопросом</div>
             </div>
@@ -692,7 +694,7 @@ function initFieldHelp() {
           return `
             <div class="field-help-real field-help-real-data">
               <div class="field-help-real-topbar"><span>painhelp</span><span>json</span></div>
-              <div class="field-help-real-card">
+              <div class="field-help-real-card data-card">
                 <div class="field-help-real-json-header"></div>
                 <div class="field-help-real-json-line"></div>
                 <div class="field-help-real-json-line short"></div>
@@ -707,7 +709,8 @@ function initFieldHelp() {
           return `
             <div class="field-help-real field-help-real-form">
               <div class="field-help-real-topbar"><span>painhelp</span><span>email</span></div>
-              <div class="field-help-real-card">
+              <div class="field-help-real-card form-card">
+                <div class="field-help-real-email-icon"></div>
                 <div class="field-help-real-label"></div>
                 <div class="field-help-real-field target"></div>
                 <div class="field-help-real-helper"></div>

@@ -341,11 +341,11 @@ button { cursor: pointer; background: none; border: none; }
 .field-help-popover {
   position: fixed;
   z-index: 2000;
-  width: min(320px, calc(100vw - 24px));
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  width: min(330px, calc(100vw - 24px));
+  background: linear-gradient(180deg, #f8f3ea 0%, #f2efe8 100%);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18), 0 6px 20px rgba(15, 23, 42, 0.12);
   padding: var(--space-4);
   opacity: 0;
   visibility: hidden;
@@ -360,18 +360,20 @@ button { cursor: pointer; background: none; border: none; }
   pointer-events: auto;
 }
 .field-help-preview {
-  background: linear-gradient(180deg, var(--color-surface-2), var(--color-surface));
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.16));
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
   padding: var(--space-3);
   margin-bottom: var(--space-3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
 }
 .field-help-phone {
-  background: linear-gradient(180deg, #f7f9fd, #eef4ff);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #f7f9fd 0%, #edf3ff 100%);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 14px;
   padding: var(--space-3);
   min-height: 198px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
 }
 .field-help-topbar {
   display: flex;
@@ -394,6 +396,23 @@ button { cursor: pointer; background: none; border: none; }
   gap: var(--space-2);
   min-height: 150px;
   color: var(--color-text);
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+.field-help-real-hero .field-help-real-card,
+.field-help-real-result .field-help-real-card,
+.field-help-real-question .field-help-real-card,
+.field-help-real-form .field-help-real-card,
+.field-help-real-logic .field-help-real-card,
+.field-help-real-data .field-help-real-card {
+  background: rgba(255,255,255,0.84);
+}
+.field-help-real-hero .field-help-phone,
+.field-help-real-result .field-help-phone,
+.field-help-real-question .field-help-phone,
+.field-help-real-form .field-help-phone,
+.field-help-real-logic .field-help-phone,
+.field-help-real-data .field-help-phone {
+  background: linear-gradient(180deg, #f9fbff 0%, #eff6ff 100%);
 }
 .field-help-real-topbar {
   display: flex;
@@ -426,6 +445,19 @@ button { cursor: pointer; background: none; border: none; }
   border-radius: var(--radius-lg);
   padding: var(--space-3);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+}
+.field-help-real-hero .field-help-real-card {
+  gap: var(--space-3);
+}
+.field-help-real-question .field-help-real-card {
+  gap: var(--space-2);
+}
+.field-help-real-form .field-help-real-card {
+  gap: var(--space-2);
+}
+.field-help-real-logic .field-help-real-card,
+.field-help-real-data .field-help-real-card {
+  gap: var(--space-2);
 }
 .field-help-real-badges {
   display: flex;
@@ -470,10 +502,15 @@ button { cursor: pointer; background: none; border: none; }
   height: 18px;
   width: 88%;
   background: var(--color-primary-highlight);
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 20px;
+  line-height: 1.1;
+  border-radius: 10px;
 }
 .field-help-real-title.small {
   width: 70%;
   height: 14px;
+  font-size: 14px;
 }
 .field-help-real-subtitle {
   width: 72%;
@@ -487,6 +524,7 @@ button { cursor: pointer; background: none; border: none; }
   border-radius: 999px;
   background: var(--color-primary);
   border-color: var(--color-primary);
+  box-shadow: 0 2px 10px rgba(1, 105, 111, 0.18);
 }
 .field-help-real-button.secondary {
   background: rgba(148, 163, 184, 0.12);
@@ -506,8 +544,17 @@ button { cursor: pointer; background: none; border: none; }
   width: 46%;
   height: 9px;
 }
+.field-help-real-email-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(1, 105, 111, 0.09);
+  border: 1px solid rgba(1, 105, 111, 0.12);
+  margin-bottom: 2px;
+}
 .field-help-real-field {
   height: 22px;
+  border-radius: 10px;
 }
 .field-help-real-helper {
   width: 42%;
@@ -530,10 +577,14 @@ button { cursor: pointer; background: none; border: none; }
 .field-help-real-question-title {
   width: 74%;
   height: 14px;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.2;
 }
 .field-help-real-option {
   width: 100%;
   height: 14px;
+  border-radius: 10px;
 }
 .field-help-real-option.selected {
   background: rgba(1, 105, 111, 0.08);
@@ -578,7 +629,7 @@ button { cursor: pointer; background: none; border: none; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
   text-align: center;
-  color: var(--color-text-muted);
+  color: rgba(122, 121, 116, 0.8);
 }
 .field-help-real-title.target,
 .field-help-real-button.target,
@@ -592,14 +643,19 @@ button { cursor: pointer; background: none; border: none; }
   background: var(--color-primary-highlight);
 }
 .field-help-copy {
-  font-size: var(--text-sm);
-  color: var(--color-text);
-  line-height: 1.5;
+  font-size: 12px;
+  color: rgba(39, 44, 56, 0.7);
+  line-height: 1.45;
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0.01em;
 }
 .field-help-copy strong {
   display: block;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: var(--space-1);
+  font-style: normal;
+  color: rgba(17, 24, 39, 0.82);
 }
 .field-input {
   padding: var(--space-3) var(--space-4);
