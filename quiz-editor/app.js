@@ -380,10 +380,22 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-function setReadOnlyCrmFields() {
-  document.querySelectorAll('#tab-crm input.field-input').forEach(input => {
-    input.setAttribute('readonly', 'readonly');
-    input.setAttribute('aria-readonly', 'true');
+function syncDescriptionValues() {
+  const fields = [
+    ['crm-score', 'crm-score-value'],
+    ['crm-result', 'crm-result-value'],
+    ['crm-is_chronic', 'crm-is_chronic-value'],
+    ['crm-failed_treatment', 'crm-failed_treatment-value'],
+    ['crm-source', 'crm-source-value'],
+    ['crm-answers_json', 'crm-answers_json-value']
+  ];
+
+  fields.forEach(([sourceId, targetId]) => {
+    const source = document.getElementById(sourceId);
+    const target = document.getElementById(targetId);
+    if (source && target) {
+      target.textContent = source.value || source.placeholder || '—';
+    }
   });
 }
 
@@ -417,6 +429,21 @@ if (closeGuideBtn) {
     if (panel) panel.hidden = true;
   });
 }
+
+const crmValuesSyncObserver = new MutationObserver(() => {
+  syncDescriptionValues();
+});
+
+const crmFieldsTarget = document.getElementById('tab-crm');
+if (crmFieldsTarget) {
+  crmValuesSyncObserver.observe(crmFieldsTarget, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+}
+
+syncDescriptionValues();
 
 // ---------- LOAD JSON ----------
 document.getElementById('loadJsonBtn').addEventListener('click', () => {

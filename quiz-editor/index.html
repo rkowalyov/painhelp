@@ -179,51 +179,93 @@
       <button class="btn btn-primary" id="openGuideBtn" type="button">Описание редактора</button>
     </div>
 
+    <div class="doc-badges" aria-label="Справочные теги">
+      <span class="doc-badge">Read-only</span>
+      <span class="doc-badge">CRM</span>
+      <span class="doc-badge">Flags</span>
+    </div>
+
     <div class="crm-info">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       Поля имя, фамилия, отчество, email, телефон — стандартные поля Битрикс24, передаются автоматически обработчиком квиза.
     </div>
 
     <div class="readonly-crm-wrap">
-      <div class="form-grid readonly-grid">
-        <div class="field-group">
-          <label class="field-label" data-help-id="crm-score">Итоговый балл</label>
-          <input class="field-input" id="crm-score" type="text" placeholder="UF_CRM_1777993552" readonly />
+      <div class="reference-grid">
+        <div class="reference-card">
+          <div class="reference-card-header">Каноническая схема CRM</div>
+          <div class="reference-list">
+            <div class="reference-row">
+              <span class="reference-key">score</span>
+              <span class="reference-value">UF_CRM_1777993552</span>
+            </div>
+            <div class="reference-row">
+              <span class="reference-key">result</span>
+              <span class="reference-value">UF_CRM_1777993608</span>
+            </div>
+            <div class="reference-row">
+              <span class="reference-key">is_chronic</span>
+              <span class="reference-value">UF_CRM_1777993788</span>
+            </div>
+            <div class="reference-row">
+              <span class="reference-key">failed_treatment</span>
+              <span class="reference-value">UF_CRM_1777993848</span>
+            </div>
+            <div class="reference-row">
+              <span class="reference-key">source</span>
+              <span class="reference-value">UF_CRM_1777993881</span>
+            </div>
+            <div class="reference-row">
+              <span class="reference-key">answers_json</span>
+              <span class="reference-value">UF_CRM_1786729063</span>
+            </div>
+          </div>
         </div>
-        <div class="field-group">
-          <label class="field-label" data-help-id="crm-result">Текст результата</label>
-          <input class="field-input" id="crm-result" type="text" placeholder="UF_CRM_1777993608" readonly />
-        </div>
-        <div class="field-group">
-          <label class="field-label" data-help-id="crm-is_chronic">Флаг «хроническая боль»</label>
-          <input class="field-input" id="crm-is_chronic" type="text" placeholder="UF_CRM_1777993788" readonly />
-        </div>
-        <div class="field-group">
-          <label class="field-label" data-help-id="crm-failed_treatment">Флаг «неуспешное лечение»</label>
-          <input class="field-input" id="crm-failed_treatment" type="text" placeholder="UF_CRM_1777993848" readonly />
-        </div>
-        <div class="field-group">
-          <label class="field-label" data-help-id="crm-source">Источник (source)</label>
-          <input class="field-input" id="crm-source" type="text" placeholder="UF_CRM_1777993881" readonly />
-        </div>
-        <div class="field-group">
-          <label class="field-label" data-help-id="crm-answers_json">JSON ответов квиза</label>
-          <input class="field-input" id="crm-answers_json" type="text" placeholder="UF_CRM_1786729063" readonly />
+
+        <div class="reference-card">
+          <div class="reference-card-header">Флаги условий</div>
+          <div class="reference-list compact">
+            <div class="reference-flag">
+              <code>chronic_if_gte_index</code>
+              <span>ставит is_chronic при пороге chronic_threshold</span>
+            </div>
+            <div class="reference-flag">
+              <code>failed_treatment_if_value</code>
+              <span>ставит failed_treatment при совпадении failed_treatment_value</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="panel-header" style="margin-top:var(--space-8)">
-        <h3>Флаги-условия</h3>
-        <p>Специальные поля активируются по условиям из ответов</p>
+        <h3>Справочная таблица</h3>
+        <p>Значения используются в сценарии и обработчике, редактировать здесь нельзя</p>
       </div>
-      <div class="crm-flags-info">
-        <div class="flag-card">
-          <div class="flag-name"><code>chronic_if_gte_index</code></div>
-          <div class="flag-desc">Ставит флаг <strong>is_chronic</strong>, если индекс выбранного варианта ≥ <code>chronic_threshold</code> вопроса</div>
+
+      <div class="field-readonly-list">
+        <div class="field-readonly-item">
+          <span class="field-readonly-label" data-help-id="crm-score">Итоговый балл</span>
+          <span class="field-readonly-value" id="crm-score-value">UF_CRM_1777993552</span>
         </div>
-        <div class="flag-card">
-          <div class="flag-name"><code>failed_treatment_if_value</code></div>
-          <div class="flag-desc">Ставит флаг <strong>failed_treatment</strong>, если значение ответа совпадает с <code>failed_treatment_value</code> вопроса</div>
+        <div class="field-readonly-item">
+          <span class="field-readonly-label" data-help-id="crm-result">Текст результата</span>
+          <span class="field-readonly-value" id="crm-result-value">UF_CRM_1777993608</span>
+        </div>
+        <div class="field-readonly-item">
+          <span class="field-readonly-label" data-help-id="crm-is_chronic">Флаг «хроническая боль»</span>
+          <span class="field-readonly-value" id="crm-is_chronic-value">UF_CRM_1777993788</span>
+        </div>
+        <div class="field-readonly-item">
+          <span class="field-readonly-label" data-help-id="crm-failed_treatment">Флаг «неуспешное лечение»</span>
+          <span class="field-readonly-value" id="crm-failed_treatment-value">UF_CRM_1777993848</span>
+        </div>
+        <div class="field-readonly-item">
+          <span class="field-readonly-label" data-help-id="crm-source">Источник (source)</span>
+          <span class="field-readonly-value" id="crm-source-value">UF_CRM_1777993881</span>
+        </div>
+        <div class="field-readonly-item">
+          <span class="field-readonly-label" data-help-id="crm-answers_json">JSON ответов квиза</span>
+          <span class="field-readonly-value" id="crm-answers_json-value">UF_CRM_1786729063</span>
         </div>
       </div>
     </div>
