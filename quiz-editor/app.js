@@ -380,6 +380,44 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
+function setReadOnlyCrmFields() {
+  document.querySelectorAll('#tab-crm input.field-input').forEach(input => {
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('aria-readonly', 'true');
+  });
+}
+
+async function loadEditorGuide() {
+  const guidePanel = document.getElementById('guidePanel');
+  const guideContent = document.getElementById('guideContent');
+  if (!guidePanel || !guideContent) return;
+
+  try {
+    const response = await fetch('../QUIZ_GUIDE.md');
+    if (!response.ok) throw new Error('Guide file not found');
+    const text = await response.text();
+    guideContent.textContent = text;
+    guidePanel.hidden = false;
+    guidePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (error) {
+    guideContent.textContent = 'Не удалось загрузить описание редактора. Проверьте файл QUIZ_GUIDE.md в корне проекта.';
+    guidePanel.hidden = false;
+  }
+}
+
+const openGuideBtn = document.getElementById('openGuideBtn');
+if (openGuideBtn) {
+  openGuideBtn.addEventListener('click', loadEditorGuide);
+}
+
+const closeGuideBtn = document.getElementById('closeGuideBtn');
+if (closeGuideBtn) {
+  closeGuideBtn.addEventListener('click', () => {
+    const panel = document.getElementById('guidePanel');
+    if (panel) panel.hidden = true;
+  });
+}
+
 // ---------- LOAD JSON ----------
 document.getElementById('loadJsonBtn').addEventListener('click', () => {
   document.getElementById('fileInput').click();

@@ -277,6 +277,51 @@ button { cursor: pointer; background: none; border: none; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
+.guide-toolbar {
+  margin-bottom: var(--space-6);
+}
+
+.guide-panel {
+  margin-top: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.guide-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-surface-2);
+}
+
+.guide-readout {
+  max-height: 62vh;
+  overflow: auto;
+  padding: var(--space-5);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.readonly-crm-wrap {
+  opacity: 0.96;
+}
+
+.readonly-grid input[readonly] {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  cursor: default;
+}
+
 /* ===== PANEL HEADER ===== */
 .panel-header { margin-bottom: var(--space-6); }
 .panel-header h2 {
