@@ -388,16 +388,43 @@ button { cursor: pointer; background: none; border: none; }
   background: var(--color-primary);
   display: inline-block;
 }
+.field-help-figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.field-help-pill {
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--color-primary);
+  background: var(--color-primary-highlight);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+.field-help-hero,
+.field-help-block,
+.field-help-cta,
+.field-help-question-title,
+.field-help-form-label,
+.field-help-form-input,
+.field-help-form-small,
+.field-help-option {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
 .field-help-hero {
   height: 18px;
-  border-radius: var(--radius-sm);
   background: var(--color-primary-highlight);
-  border: 1px solid var(--color-border);
-  margin-bottom: var(--space-2);
 }
 .field-help-hero.target,
 .field-help-block.target,
-.field-help-cta.target {
+.field-help-cta.target,
+.field-help-question-title.target,
+.field-help-form-input.target,
+.field-help-option.target {
   position: relative;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.45);
   border-color: var(--color-primary);
@@ -405,16 +432,48 @@ button { cursor: pointer; background: none; border: none; }
 }
 .field-help-block {
   height: 12px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  margin-bottom: var(--space-2);
+}
+.field-help-block.short {
+  width: 68%;
 }
 .field-help-cta {
   height: 22px;
   border-radius: var(--radius-full);
+}
+.field-help-cta.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.field-help-cta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.field-help-cta.muted {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+}
+.field-help-question-title {
+  height: 16px;
+  width: 72%;
+}
+.field-help-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.field-help-option {
+  height: 12px;
+}
+.field-help-form-label {
+  height: 10px;
+  width: 52%;
+}
+.field-help-form-input {
+  height: 22px;
+}
+.field-help-form-small {
+  height: 9px;
+  width: 36%;
 }
 .field-help-copy {
   font-size: var(--text-sm);

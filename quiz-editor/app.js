@@ -621,16 +621,59 @@ function initFieldHelp() {
   });
 
   function showFieldHelp(event, key) {
-    const config = helpMap[key] || { title: 'Подсказка', text: 'Описание будет добавлено позже.', target: 'block' };
-    const targetClass = config.target === 'hero' ? 'target' : config.target === 'cta' ? 'target' : 'target';
+    const config = helpMap[key] || { title: 'Подсказка', text: 'Описание будет добавлено позже.', target: 'field' };
+    const previewMarkup = (() => {
+      switch (config.target) {
+        case 'hero':
+          return `
+            <div class="field-help-figure field-help-figure-hero">
+              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Quiz</span><span>preview</span></div>
+              <div class="field-help-pill">Доверие</div>
+              <div class="field-help-hero target"></div>
+              <div class="field-help-block"></div>
+              <div class="field-help-block short"></div>
+              <div class="field-help-cta primary target"></div>
+            </div>
+          `;
+        case 'cta':
+          return `
+            <div class="field-help-figure field-help-figure-cta">
+              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Action</span><span>UI</span></div>
+              <div class="field-help-cta-row">
+                <div class="field-help-cta target"></div>
+                <div class="field-help-cta muted"></div>
+              </div>
+            </div>
+          `;
+        case 'question':
+          return `
+            <div class="field-help-figure field-help-figure-question">
+              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Question</span><span>step</span></div>
+              <div class="field-help-question-title target"></div>
+              <div class="field-help-option-list">
+                <div class="field-help-option target"></div>
+                <div class="field-help-option"></div>
+                <div class="field-help-option"></div>
+              </div>
+            </div>
+          `;
+        case 'field':
+        default:
+          return `
+            <div class="field-help-figure field-help-figure-field">
+              <div class="field-help-topbar"><span><span class="field-help-dot"></span> Form</span><span>field</span></div>
+              <div class="field-help-form-label"></div>
+              <div class="field-help-form-input target"></div>
+              <div class="field-help-form-small"></div>
+            </div>
+          `;
+      }
+    })();
+
     popover.innerHTML = `
       <div class="field-help-preview">
         <div class="field-help-phone">
-          <div class="field-help-topbar"><span><span class="field-help-dot"></span> Quiz</span><span>preview</span></div>
-          <div class="field-help-hero ${targetClass}"></div>
-          <div class="field-help-block ${targetClass}"></div>
-          <div class="field-help-block"></div>
-          <div class="field-help-cta ${targetClass}"></div>
+          ${previewMarkup}
         </div>
       </div>
       <div class="field-help-copy">
