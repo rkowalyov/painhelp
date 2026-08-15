@@ -367,11 +367,11 @@ button { cursor: pointer; background: none; border: none; }
   margin-bottom: var(--space-3);
 }
 .field-help-phone {
-  background: linear-gradient(180deg, #f8fbff, #eef4ff);
+  background: linear-gradient(180deg, #f7f9fd, #eef4ff);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
-  min-height: 162px;
+  min-height: 198px;
 }
 .field-help-topbar {
   display: flex;
@@ -388,15 +388,14 @@ button { cursor: pointer; background: none; border: none; }
   background: var(--color-primary);
   display: inline-block;
 }
-.field-help-screen {
+.field-help-real {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  min-height: 128px;
-  padding: 4px 0;
+  min-height: 150px;
   color: var(--color-text);
 }
-.field-help-screen-topbar {
+.field-help-real-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -405,128 +404,188 @@ button { cursor: pointer; background: none; border: none; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-.field-help-screen-brand {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-.field-help-screen-hero-card,
-.field-help-screen-cta-card,
-.field-help-screen-card,
-.field-help-screen-form-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  background: rgba(255,255,255,0.7);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: var(--radius-lg);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-}
-.field-help-screen-badges {
-  display: flex;
-  gap: var(--space-1);
-  flex-wrap: wrap;
-}
-.field-help-screen-badge {
-  display: inline-block;
-  padding: 3px 7px;
-  border-radius: 999px;
-  font-size: 8px;
-  background: rgba(1, 105, 111, 0.08);
-  color: var(--color-primary);
-  border: 1px solid rgba(1, 105, 111, 0.12);
-}
-.field-help-screen-title,
-.field-help-screen-subtitle,
-.field-help-screen-card-label,
-.field-help-screen-question-title,
-.field-help-screen-form-label,
-.field-help-screen-form-input,
-.field-help-screen-small-line,
-.field-help-screen-option,
-.field-help-screen-button,
-.field-help-screen-line,
-.field-help-screen-progress {
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-}
-.field-help-screen-title {
-  height: 18px;
-  width: 88%;
-  background: var(--color-primary-highlight);
-}
-.field-help-screen-subtitle {
-  height: 11px;
-  width: 72%;
-}
-.field-help-screen-subtitle.short {
-  width: 58%;
-}
-.field-help-screen-progress {
+.field-help-real-progress {
   height: 6px;
-  width: 100%;
-  background: rgba(148, 163, 184, 0.15);
-  border: none;
+  border-radius: 999px;
   overflow: hidden;
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.18);
 }
-.field-help-screen-progress span {
+.field-help-real-progress span {
   display: block;
-  width: 40%;
   height: 100%;
   background: var(--color-primary);
   border-radius: inherit;
 }
-.field-help-screen-card-label {
-  height: 8px;
+.field-help-real-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+}
+.field-help-real-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.field-help-real-badge {
+  display: inline-block;
+  font-size: 8px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(1, 105, 111, 0.08);
+  border: 1px solid rgba(1, 105, 111, 0.12);
+  color: var(--color-primary);
+}
+.field-help-real-badge.tiny {
   width: 46%;
-}
-.field-help-screen-question-title {
-  height: 14px;
-  width: 78%;
-}
-.field-help-screen-option {
-  height: 14px;
-}
-.field-help-screen-form-label {
-  height: 9px;
-  width: 52%;
-}
-.field-help-screen-form-input {
-  height: 22px;
-}
-.field-help-screen-small-line {
-  height: 9px;
-  width: 40%;
-}
-.field-help-screen-line {
   height: 10px;
-  width: 62%;
+  padding: 0;
 }
-.field-help-screen-line.wide {
-  width: 82%;
+.field-help-real-title,
+.field-help-real-subtitle,
+.field-help-real-label,
+.field-help-real-field,
+.field-help-real-helper,
+.field-help-real-option,
+.field-help-real-button,
+.field-help-real-rule,
+.field-help-real-json-header,
+.field-help-real-json-line,
+.field-help-real-rule-line,
+.field-help-real-question-title,
+.field-help-real-checkbox,
+.field-help-real-checkbox-label,
+.field-help-real-title.small,
+.field-help-real-title.target {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
-.field-help-screen-button {
-  height: 26px;
+.field-help-real-title {
+  height: 18px;
+  width: 88%;
+  background: var(--color-primary-highlight);
+}
+.field-help-real-title.small {
+  width: 70%;
+  height: 14px;
+}
+.field-help-real-subtitle {
+  width: 72%;
+  height: 10px;
+}
+.field-help-real-subtitle.short { width: 56%; }
+.field-help-real-subtitle.longer { width: 86%; }
+.field-help-real-button {
   width: 100%;
+  height: 24px;
   border-radius: 999px;
   background: var(--color-primary);
   border-color: var(--color-primary);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
 }
-.field-help-screen-button.secondary {
+.field-help-real-button.secondary {
   background: rgba(148, 163, 184, 0.12);
   border-color: rgba(148, 163, 184, 0.2);
 }
-.field-help-screen-button.footer {
+.field-help-real-button.footer {
   width: 68%;
   align-self: flex-end;
 }
-.field-help-screen-title.target,
-.field-help-screen-button.target,
-.field-help-screen-question-title.target,
-.field-help-screen-option.target,
-.field-help-screen-form-input.target {
+.field-help-real-cta-row,
+.field-help-real-checkbox-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.field-help-real-label {
+  width: 46%;
+  height: 9px;
+}
+.field-help-real-field {
+  height: 22px;
+}
+.field-help-real-helper {
+  width: 42%;
+  height: 8px;
+}
+.field-help-real-checkbox-row {
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+}
+.field-help-real-checkbox {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.12);
+}
+.field-help-real-checkbox-label {
+  height: 8px;
+  width: 100%;
+}
+.field-help-real-question-title {
+  width: 74%;
+  height: 14px;
+}
+.field-help-real-option {
+  width: 100%;
+  height: 14px;
+}
+.field-help-real-option.selected {
+  background: rgba(1, 105, 111, 0.08);
+  border-color: rgba(1, 105, 111, 0.25);
+}
+.field-help-real-rule {
+  width: fit-content;
+  padding: 4px 8px;
+  font-size: 8px;
+  background: rgba(1, 105, 111, 0.08);
+  color: var(--color-primary);
+  border-color: rgba(1, 105, 111, 0.14);
+}
+.field-help-real-rule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.field-help-real-rule-line {
+  display: block;
+  height: 10px;
+}
+.field-help-real-rule-line.short {
+  width: 60%;
+}
+.field-help-real-json-header {
+  width: 54%;
+  height: 9px;
+}
+.field-help-real-json-line {
+  width: 100%;
+  height: 9px;
+}
+.field-help-real-json-line.short {
+  width: 62%;
+}
+.field-help-real-context {
+  align-self: center;
+  width: 100%;
+  padding-top: 2px;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+.field-help-real-title.target,
+.field-help-real-button.target,
+.field-help-real-question-title.target,
+.field-help-real-option.target,
+.field-help-real-field.target,
+.field-help-real-rule.target {
   position: relative;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.45);
   border-color: var(--color-primary);

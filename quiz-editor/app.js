@@ -544,57 +544,57 @@ function initFieldHelp() {
     'q-text': {
       title: 'Текст вопроса',
       text: 'Формулировка, которую видит пользователь в интерфейсе квиза. Важно, чтобы вопрос был понятным, конкретным и без двусмысленностей.',
-      target: 'block'
+      target: 'question'
     },
     'q-id': {
       title: 'ID вопроса',
       text: 'Внутренний идентификатор вопроса. Он используется в JSON, в логике подсчёта и в маппинге на CRM-поля. Пользователю не показывается.',
-      target: 'block'
+      target: 'data'
     },
     'q-crm-select': {
       title: 'CRM-поле ответа',
       text: 'Это Bitrix-значение, в которое сохраняется выбор пользователя для данного вопроса. Каждый вопрос обычно связан с отдельным UF_CRM_... полем.',
-      target: 'block'
+      target: 'field'
     },
     'q-flag': {
       title: 'Флаг условия',
       text: 'Автоматически ставит диагностический маркер по ответу: например, хроническая боль или отсутствие эффекта от лечения.',
-      target: 'cta'
+      target: 'logic'
     },
     'q-flag-param': {
       title: 'Параметр флага',
       text: 'Значение для сравнения: порог индекса или конкретный ответ, при котором срабатывает условный флаг. Например, «более 6 месяцев» или «no_result».',
-      target: 'cta'
+      target: 'logic'
     },
     'crm-score': {
       title: 'Итоговый балл',
       text: 'Числовой итог score по всем ответам пользователя. Это число используется для выбора уровня результата: low / medium / high.',
-      target: 'block'
+      target: 'data'
     },
     'crm-result': {
       title: 'Текст результата',
       text: 'CRM-поле, в которое отправляется итоговый заголовок выбранного уровня: например «Боль требует внимания» или «Рекомендуем обратиться к специалисту».',
-      target: 'hero'
+      target: 'cta'
     },
     'crm-is_chronic': {
       title: 'Флаг «хроническая боль»',
       text: 'Булевый флаг Y/N. Он автоматически ставится, если условие по вопросу сработало: например, боль длится долго или индекс выше порога.',
-      target: 'cta'
+      target: 'logic'
     },
     'crm-failed_treatment': {
       title: 'Флаг «неуспешное лечение»',
       text: 'Булевый флаг Y/N. Он сигнализирует, что пользователь уже обращался за помощью, но лечение не дало результата.',
-      target: 'cta'
+      target: 'logic'
     },
     'crm-source': {
       title: 'Источник лида',
       text: 'Код или метка, откуда пришёл пользователь: тип квиза, источник трафика, канал или конкретная кампания.',
-      target: 'hero'
+      target: 'data'
     },
     'crm-answers_json': {
       title: 'JSON ответов квиза',
       text: 'один JSON со всеми ответами пользователя. Он нужен для аналитики, отладки и дальнейшей обработки в CRM без потери структуры ответов.',
-      target: 'block'
+      target: 'data'
     }
   };
 
@@ -626,58 +626,98 @@ function initFieldHelp() {
       switch (config.target) {
         case 'hero':
           return `
-            <div class="field-help-screen field-help-screen-hero">
-              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>start</span></div>
-              <div class="field-help-screen-hero-card">
-                <div class="field-help-screen-badges">
-                  <span class="field-help-screen-badge">Без регистрации</span>
-                  <span class="field-help-screen-badge">Анонимно</span>
+            <div class="field-help-real field-help-real-hero">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>start</span></div>
+              <div class="field-help-real-progress"><span></span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-badges">
+                  <span class="field-help-real-badge">Без регистрации</span>
+                  <span class="field-help-real-badge">Анонимно</span>
                 </div>
-                <div class="field-help-screen-title target"></div>
-                <div class="field-help-screen-subtitle"></div>
-                <div class="field-help-screen-subtitle short"></div>
-                <div class="field-help-screen-button target"></div>
+                <div class="field-help-real-title target"></div>
+                <div class="field-help-real-subtitle"></div>
+                <div class="field-help-real-subtitle short"></div>
+                <div class="field-help-real-button target"></div>
               </div>
+              <div class="field-help-real-context">дальше / ниже</div>
             </div>
           `;
         case 'cta':
           return `
-            <div class="field-help-screen field-help-screen-cta">
-              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>result</span></div>
-              <div class="field-help-screen-cta-card">
-                <div class="field-help-screen-line wide"></div>
-                <div class="field-help-screen-line"></div>
-                <div class="field-help-screen-button target"></div>
-                <div class="field-help-screen-button secondary"></div>
+            <div class="field-help-real field-help-real-result">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>result</span></div>
+              <div class="field-help-real-progress"><span style="width:100%"></span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-badge tiny"></div>
+                <div class="field-help-real-title small"></div>
+                <div class="field-help-real-subtitle longer"></div>
+                <div class="field-help-real-cta-row">
+                  <div class="field-help-real-button target"></div>
+                  <div class="field-help-real-button secondary"></div>
+                </div>
               </div>
+              <div class="field-help-real-context">выше / ниже</div>
             </div>
           `;
-        case 'block':
         case 'question':
           return `
-            <div class="field-help-screen field-help-screen-question">
-              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>step 2/5</span></div>
-              <div class="field-help-screen-progress"><span></span></div>
-              <div class="field-help-screen-card">
-                <div class="field-help-screen-card-label"></div>
-                <div class="field-help-screen-question-title target"></div>
-                <div class="field-help-screen-option target"></div>
-                <div class="field-help-screen-option"></div>
-                <div class="field-help-screen-option"></div>
+            <div class="field-help-real field-help-real-question">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>step 2/5</span></div>
+              <div class="field-help-real-progress"><span style="width:40%"></span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-label"></div>
+                <div class="field-help-real-question-title target"></div>
+                <div class="field-help-real-option selected target"></div>
+                <div class="field-help-real-option"></div>
+                <div class="field-help-real-option"></div>
               </div>
+              <div class="field-help-real-context">выше / ниже</div>
+            </div>
+          `;
+        case 'logic':
+          return `
+            <div class="field-help-real field-help-real-logic">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>logic</span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-rule target">if score ≥ 7</div>
+                <div class="field-help-real-rule-row">
+                  <span class="field-help-real-rule-line"></span>
+                  <span class="field-help-real-rule-line short"></span>
+                </div>
+              </div>
+              <div class="field-help-real-context">рядом с вопросом</div>
+            </div>
+          `;
+        case 'data':
+          return `
+            <div class="field-help-real field-help-real-data">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>json</span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-json-header"></div>
+                <div class="field-help-real-json-line"></div>
+                <div class="field-help-real-json-line short"></div>
+                <div class="field-help-real-json-line"></div>
+                <div class="field-help-real-json-line short"></div>
+              </div>
+              <div class="field-help-real-context">внутри логики</div>
             </div>
           `;
         case 'field':
         default:
           return `
-            <div class="field-help-screen field-help-screen-form">
-              <div class="field-help-screen-topbar"><span class="field-help-screen-brand">painhelp</span><span>email</span></div>
-              <div class="field-help-screen-form-card">
-                <div class="field-help-screen-form-label"></div>
-                <div class="field-help-screen-form-input target"></div>
-                <div class="field-help-screen-small-line"></div>
-                <div class="field-help-screen-button footer"></div>
+            <div class="field-help-real field-help-real-form">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>email</span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-label"></div>
+                <div class="field-help-real-field target"></div>
+                <div class="field-help-real-helper"></div>
+                <div class="field-help-real-checkbox-row">
+                  <span class="field-help-real-checkbox"></span>
+                  <span class="field-help-real-checkbox-label"></span>
+                </div>
+                <div class="field-help-real-button footer"></div>
               </div>
+              <div class="field-help-real-context">выше / ниже / рядом</div>
             </div>
           `;
       }
