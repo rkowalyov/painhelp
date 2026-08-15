@@ -400,21 +400,158 @@ function syncDescriptionValues() {
 }
 
 async function loadEditorGuide() {
-  const guidePanel = document.getElementById('guidePanel');
-  const guideContent = document.getElementById('guideContent');
-  if (!guidePanel || !guideContent) return;
-
   try {
     const response = await fetch('../QUIZ_GUIDE.md');
     if (!response.ok) throw new Error('Guide file not found');
-    const text = await response.text();
-    guideContent.textContent = text;
-    guidePanel.hidden = false;
-    guidePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const markdown = await response.text();
+
+    const html = `<!DOCTYPE html>
+      <html lang="ru">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Описание редактора</title>
+        <style>
+          :root {
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --text: #1a1d23;
+            --muted: #5f6b7a;
+            --border: #e2e8f0;
+            --code-bg: #f3f6fb;
+          }
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+          }
+          .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+          }
+          .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+          }
+          button {
+            appearance: none;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 600;
+            cursor: pointer;
+          }
+          h1, h2, h3, h4 {
+            line-height: 1.25;
+            margin: 1.2em 0 0.5em;
+          }
+          h1 { font-size: 2rem; }
+          h2 { font-size: 1.6rem; }
+          h3 { font-size: 1.2rem; }
+          p, li { color: var(--text); }
+          ul, ol { padding-left: 1.35rem; }
+          code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.1rem 0.35rem;
+            font-size: 0.88em;
+          }
+          pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+          }
+          .doc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+            padding: 24px 22px;
+          }
+          @media print {
+            body { background: #fff; }
+            .toolbar { display: none; }
+            .doc {
+              box-shadow: none;
+              border: none;
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="page">
+          <div class="toolbar">
+            <button type="button" onclick="window.print()">Печать</button>
+          </div>
+          <article class="doc">
+            ${renderMarkdownToHtml(markdown)}
+          </article>
+        </div>
+      </body>
+      </html>`;
+
+    const win = window.open('', '_blank', 'noopener,noreferrer');
+    if (!win) {
+      alert('Браузер заблокировал открытие новой вкладки. Разрешите всплывающие окна и попробуйте снова.');
+      return;
+    }
+
+    win.document.write(html);
+    win.document.close();
   } catch (error) {
-    guideContent.textContent = 'Не удалось загрузить описание редактора. Проверьте файл QUIZ_GUIDE.md в корне проекта.';
-    guidePanel.hidden = false;
+    const fallback = window.open('', '_blank', 'noopener,noreferrer');
+    if (fallback) {
+      fallback.document.write(`<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;padding:32px;line-height:1.6;"><h2>Не удалось открыть описание</h2><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p></body></html>`);
+      fallback.document.close();
+    }
   }
+}
+
+function renderMarkdownToHtml(markdown) {
+  const escaped = markdown
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const blocks = escaped
+    .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+    .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+    .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.*)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+    .replace(/\n{2,}/g, '</p><p>');
+
+  return `<p>${blocks.replace(/^/, '').replace(/$/, '')}</p>`
+    .replace(/<p><h1>/g, '<h1>')
+    .replace(/<\/h1><\/p>/g, '</h1>')
+    .replace(/<p><h2>/g, '<h2>')
+    .replace(/<\/h2><\/p>/g, '</h2>')
+    .replace(/<p><h3>/g, '<h3>')
+    .replace(/<\/h3><\/p>/g, '</h3>')
+    .replace(/<p><h4>/g, '<h4>')
+    .replace(/<\/h4><\/p>/g, '</h4>')
+    .replace(/<p><ul>/g, '<ul>')
+    .replace(/<\/ul><\/p>/g, '</ul>')
+    .replace(/<p><pre>/g, '<pre>')
+    .replace(/<\/pre><\/p>/g, '</pre>');
 }
 
 const openGuideBtn = document.getElementById('openGuideBtn');
