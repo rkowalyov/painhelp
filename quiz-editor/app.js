@@ -476,7 +476,7 @@ function loadFromObject(data) {
   setVal('crm-is_chronic', c.is_chronic || '');
   setVal('crm-failed_treatment', c.failed_treatment || '');
   setVal('crm-source', c.source || '');
-  setVal('crm-answers_json', c.answers_json || c.quiz_json || '');
+  setVal('crm-answers_json', c.answers_json || '');
 
   // Questions
   questions = (data.questions || []).map(q => ({
