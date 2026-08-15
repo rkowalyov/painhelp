@@ -504,42 +504,50 @@ function initFieldHelp() {
     'meta-title': {
       title: 'Главный заголовок квиза',
       text: 'Это текст, который видит пользователь на самом первом экране. Он задаёт общий смысл теста и должен сразу объяснять, зачем проходить опрос.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'title'
     },
     'meta-subtitle': {
       title: 'Подзаголовок',
       text: 'Короткое пояснение про пользу от прохождения: что получит пользователь в итоге, сколько времени займёт и зачем это нужно.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'subtitle'
     },
     'meta-cta_start': {
       title: 'Кнопка старта',
       text: 'Текст на кнопке запуска квиза. Обычно это короткий призыв вроде «Пройти тест» или «Проверить состояние».',
-      target: 'cta'
+      target: 'cta',
+      preview: 'cta'
     },
     'meta-source_label': {
       title: 'Метка источника в CRM',
       text: 'Эта надпись отмечает, откуда пришёл лид и какой вариант квиза был запущен. В Bitrix она обычно хранится как название источника или кампании.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'source'
     },
     'meta-email_title': {
       title: 'Заголовок экрана email',
       text: 'Сообщение перед формой email. Оно объясняет, почему стоит оставить контакты, чтобы получить результат и рекомендации.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'email-title'
     },
     'meta-email_subtitle': {
       title: 'Подзаголовок экрана email',
       text: 'Дополнительное пояснение к запросу email. Оно снижает тревожность и делает мотивацию более понятной.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'email-subtitle'
     },
     'meta-email_fear': {
       title: 'Fear-фраза',
       text: 'Фраза-мотиватор, которая усиливает ценность результата и помогает пользователю понять важность получения рекомендаций.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'fear'
     },
     'meta-trust_badges': {
       title: 'Метки доверия',
       text: 'Список коротких тезисов под заголовком: «Без регистрации», «Анонимно», «Основано на опыте врачей» и т.п. Они повышают доверие к квизу.',
-      target: 'hero'
+      target: 'hero',
+      preview: 'badges'
     },
     'q-text': {
       title: 'Текст вопроса',
@@ -622,9 +630,10 @@ function initFieldHelp() {
 
   function showFieldHelp(event, key) {
     const config = helpMap[key] || { title: 'Подсказка', text: 'Описание будет добавлено позже.', target: 'field' };
+    const previewVariant = config.preview || config.target || 'field';
     const previewMarkup = (() => {
-      switch (config.target) {
-        case 'hero':
+      switch (previewVariant) {
+        case 'title':
           return `
             <div class="field-help-real field-help-real-hero">
               <div class="field-help-real-topbar"><span>painhelp</span><span>start</span></div>
@@ -639,7 +648,43 @@ function initFieldHelp() {
                 <div class="field-help-real-subtitle short"></div>
                 <div class="field-help-real-button target"></div>
               </div>
-              <div class="field-help-real-context">джерело / вокруг</div>
+              <div class="field-help-real-context">заголовок / старт</div>
+            </div>
+          `;
+        case 'subtitle':
+          return `
+            <div class="field-help-real field-help-real-hero">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>start</span></div>
+              <div class="field-help-real-progress"><span></span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-badges">
+                  <span class="field-help-real-badge">Без регистрации</span>
+                  <span class="field-help-real-badge">Анонимно</span>
+                </div>
+                <div class="field-help-real-title"></div>
+                <div class="field-help-real-subtitle target longer"></div>
+                <div class="field-help-real-subtitle short"></div>
+                <div class="field-help-real-button"></div>
+              </div>
+              <div class="field-help-real-context">подзаголовок</div>
+            </div>
+          `;
+        case 'source':
+          return `
+            <div class="field-help-real field-help-real-hero">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>source</span></div>
+              <div class="field-help-real-progress"><span></span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-badges">
+                  <span class="field-help-real-badge target">utm_pain_01</span>
+                  <span class="field-help-real-badge">organic</span>
+                </div>
+                <div class="field-help-real-title"></div>
+                <div class="field-help-real-subtitle"></div>
+                <div class="field-help-real-subtitle short"></div>
+                <div class="field-help-real-button"></div>
+              </div>
+              <div class="field-help-real-context">метка в CRM</div>
             </div>
           `;
         case 'cta':
@@ -657,7 +702,74 @@ function initFieldHelp() {
                   <div class="field-help-real-button secondary"></div>
                 </div>
               </div>
-              <div class="field-help-real-context">выше / ниже</div>
+              <div class="field-help-real-context">кнопка старта / CTA</div>
+            </div>
+          `;
+        case 'email-title':
+          return `
+            <div class="field-help-real field-help-real-form">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>email</span></div>
+              <div class="field-help-real-card form-card">
+                <div class="field-help-real-email-icon"></div>
+                <div class="field-help-real-title small target"></div>
+                <div class="field-help-real-subtitle longer"></div>
+                <div class="field-help-real-field"></div>
+                <div class="field-help-real-helper"></div>
+                <div class="field-help-real-button footer"></div>
+              </div>
+              <div class="field-help-real-context">заголовок email</div>
+            </div>
+          `;
+        case 'email-subtitle':
+          return `
+            <div class="field-help-real field-help-real-form">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>email</span></div>
+              <div class="field-help-real-card form-card">
+                <div class="field-help-real-email-icon"></div>
+                <div class="field-help-real-label"></div>
+                <div class="field-help-real-subtitle longer target"></div>
+                <div class="field-help-real-field"></div>
+                <div class="field-help-real-helper"></div>
+                <div class="field-help-real-button footer"></div>
+              </div>
+              <div class="field-help-real-context">подтекст email</div>
+            </div>
+          `;
+        case 'fear':
+          return `
+            <div class="field-help-real field-help-real-form">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>email</span></div>
+              <div class="field-help-real-card form-card">
+                <div class="field-help-real-email-icon"></div>
+                <div class="field-help-real-label"></div>
+                <div class="field-help-real-field target"></div>
+                <div class="field-help-real-helper target"></div>
+                <div class="field-help-real-checkbox-row">
+                  <span class="field-help-real-checkbox"></span>
+                  <span class="field-help-real-checkbox-label"></span>
+                </div>
+                <div class="field-help-real-button footer"></div>
+              </div>
+              <div class="field-help-real-context">fear-фраза</div>
+            </div>
+          `;
+        case 'badges':
+          return `
+            <div class="field-help-real field-help-real-hero">
+              <div class="field-help-real-topbar"><span>painhelp</span><span>trust</span></div>
+              <div class="field-help-real-progress"><span></span></div>
+              <div class="field-help-real-card">
+                <div class="field-help-real-badges">
+                  <span class="field-help-real-badge target">Без регистрации</span>
+                  <span class="field-help-real-badge target">Анонимно</span>
+                  <span class="field-help-real-badge target">Проверено врачами</span>
+                </div>
+                <div class="field-help-real-title"></div>
+                <div class="field-help-real-subtitle"></div>
+                <div class="field-help-real-subtitle short"></div>
+                <div class="field-help-real-button"></div>
+              </div>
+              <div class="field-help-real-context">метки доверия</div>
             </div>
           `;
         case 'question':
@@ -739,8 +851,10 @@ function initFieldHelp() {
     `;
 
     const rect = (event.target || event.currentTarget || document.body).getBoundingClientRect();
-    const left = Math.min(window.innerWidth - 340, rect.left + 18);
-    const top = Math.min(window.innerHeight - 240, rect.bottom + 12);
+    const width = popover.offsetWidth || 330;
+    const height = popover.offsetHeight || 280;
+    const left = Math.min(window.innerWidth - width - 12, rect.left + 18);
+    const top = Math.min(Math.max(12, rect.bottom + 12), window.innerHeight - height - 12);
     popover.style.left = `${Math.max(12, left)}px`;
     popover.style.top = `${Math.max(12, top)}px`;
     popover.dataset.active = key;
