@@ -399,27 +399,73 @@ function syncDescriptionValues() {
   });
 }
 
-const FALLBACK_GUIDE_HTML = `
-  <h1>Описание редактора</h1>
-  <p>Редактор управляет структурой квиза: мета-данными, вопросами, результатами и схемой CRM-полей.</p>
-  <h2>Ключевые правила</h2>
-  <ul>
-    <li>Вопросы и ответы должны быть стабильно привязаны к CRM-полям.</li>
-    <li>Поле <code>answers_json</code> используется для хранения всех ответов квиза.</li>
-    <li>Флаги <code>chronic_if_gte_index</code> и <code>failed_treatment_if_value</code> обязательны для расчета статусов.</li>
-    <li>Раздел <code>crm_fields</code> — каноническая карта для финального payload.</li>
-  </ul>
-  <h2>Каноническая схема CRM</h2>
-  <ul>
-    <li><code>score</code> → <code>UF_CRM_1777993552</code></li>
-    <li><code>result</code> → <code>UF_CRM_1777993608</code></li>
-    <li><code>is_chronic</code> → <code>UF_CRM_1777993788</code></li>
-    <li><code>failed_treatment</code> → <code>UF_CRM_1777993848</code></li>
-    <li><code>source</code> → <code>UF_CRM_1777993881</code></li>
-    <li><code>answers_json</code> → <code>UF_CRM_1786729063</code></li>
-  </ul>
-  <h2>Печать и сохранение</h2>
-  <p>Используйте кнопку печати в браузере, чтобы сохранить документ как PDF или распечатать его для команды.</p>
+const GUIDE_MARKDOWN = `# Описание редактора
+
+## Назначение документа
+
+Этот документ описывает:
+- как устроен текущий квиз-движок,
+- какая структура сценария считается корректной,
+- как работают флаги и скоринг,
+- какой список CRM-полей является каноническим,
+- как выбирать и обновлять сценарии безопасно.
+
+## 1. Что умеет текущий квиз
+
+### 1.1 Пользовательский флоу
+
+Квиз проходит по шагам:
+1. Hero-экран: заголовок, подзаголовок, trust badges, кнопка старта.
+2. Вопросы из сценария.
+3. Экран email.
+4. Расчёт результата.
+5. Показ результата и CTA.
+6. Отправка данных в CRM, если webhook настроен.
+
+### 1.2 Data-driven архитектура
+
+Поведение квиза определяется JSON-сценарием. При корректной схеме код движка почти не меняется.
+
+### 1.3 Поддержка произвольного числа уровней скоринга
+
+Скоринг не ограничен тремя уровнями. В одном сценарии может быть любое число уровней: low/medium/high или custom keys вроде level_1, level_2, level_3.
+
+### 1.4 Условные флаги
+
+Поддерживаются флаги:
+- chronic_if_gte_index + chronic_threshold
+- failed_treatment_if_value + failed_treatment_value
+
+Эти флаги влияют на итоговые поля CRM и на визуальные маркеры в результате.
+
+## 2. Каноническая схема CRM-полей
+
+- score → UF_CRM_1777993552
+- result → UF_CRM_1777993608
+- is_chronic → UF_CRM_1777993788
+- failed_treatment → UF_CRM_1777993848
+- source → UF_CRM_1777993881
+- answers_json → UF_CRM_1786729063
+
+### Важные правила
+
+1. result должен содержать человекочитаемый текст результата.
+2. answers_json — это единственное поле для JSON ответов пользователя.
+3. Не добавляйте свободные текстовые поля в CRM, если поле уже описано в каноническом списке.
+
+## 3. Флаги CRM
+
+### chronic_if_gte_index
+
+Ставит is_chronic = Y, если индекс выбранного варианта больше либо равен chronic_threshold.
+
+### failed_treatment_if_value
+
+Ставит failed_treatment = Y, если value выбранного варианта совпадает с failed_treatment_value.
+
+## 4. Печать и сохранение
+
+Используйте кнопку Печать в браузере, чтобы сохранить документ как PDF или распечатать его для команды.
 `;
 
 async function loadEditorGuide() {
@@ -439,28 +485,7 @@ async function loadEditorGuide() {
   `;
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  const candidates = [
-    '/QUIZ_GUIDE.md',
-    './QUIZ_GUIDE.md',
-    '../QUIZ_GUIDE.md',
-    new URL('../QUIZ_GUIDE.md', window.location.href).toString(),
-    new URL('./QUIZ_GUIDE.md', window.location.href).toString()
-  ].filter((value, index, arr) => arr.indexOf(value) === index);
-
-  let guideText = null;
-
-  for (const url of candidates) {
-    try {
-      const response = await fetch(url, { cache: 'no-store' });
-      if (!response.ok) continue;
-      guideText = await response.text();
-      break;
-    } catch (error) {
-      // next candidate
-    }
-  }
-
-  const guideBody = guideText ? renderMarkdownToHtml(guideText) : FALLBACK_GUIDE_HTML;
+  const guideBody = renderMarkdownToHtml(GUIDE_MARKDOWN);
   content.innerHTML = `
     <div class="guide-header-row">
       <button type="button" class="btn btn-ghost guide-print-btn" onclick="window.print()">Печать</button>
