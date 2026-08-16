@@ -278,7 +278,21 @@ button { cursor: pointer; background: none; border: none; }
 .tab-panel.active { display: block; }
 
 .guide-toolbar {
+  display: flex;
+  justify-content: flex-start;
   margin-bottom: var(--space-4);
+}
+
+.guide-toolbar .btn {
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.9rem;
+  box-shadow: 0 10px 20px rgba(25, 31, 54, 0.08);
+  font-size: 0.9rem;
+}
+
+.guide-toolbar .btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #4d75ff 100%);
+  border: none;
 }
 
 .doc-badges {

@@ -400,6 +400,12 @@ function syncDescriptionValues() {
 }
 
 async function loadEditorGuide() {
+  const win = window.open('', '_blank', 'noopener,noreferrer');
+  if (!win) {
+    alert('Браузер заблокировал открытие новой вкладки. Разрешите всплывающие окна и попробуйте снова.');
+    return;
+  }
+
   try {
     const response = await fetch('../QUIZ_GUIDE.md');
     if (!response.ok) throw new Error('Guide file not found');
@@ -419,6 +425,7 @@ async function loadEditorGuide() {
             --muted: #5f6b7a;
             --border: #e2e8f0;
             --code-bg: #f3f6fb;
+            --primary: #2f5cff;
           }
           * { box-sizing: border-box; }
           body {
@@ -435,8 +442,26 @@ async function loadEditorGuide() {
           }
           .toolbar {
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
             margin-bottom: 20px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(6px);
+          }
+          .toolbar-title {
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.01em;
+          }
+          .toolbar-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
           }
           button {
             appearance: none;
@@ -447,10 +472,21 @@ async function loadEditorGuide() {
             padding: 10px 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+          }
+          button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(47, 92, 255, 0.12);
+          }
+          .primary-btn {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
           }
           h1, h2, h3, h4 {
             line-height: 1.25;
             margin: 1.2em 0 0.5em;
+            color: var(--text);
           }
           h1 { font-size: 2rem; }
           h2 { font-size: 1.6rem; }
@@ -495,7 +531,11 @@ async function loadEditorGuide() {
       <body>
         <div class="page">
           <div class="toolbar">
-            <button type="button" onclick="window.print()">Печать</button>
+            <div class="toolbar-title">Описание редактора</div>
+            <div class="toolbar-actions">
+              <button type="button" class="primary-btn" onclick="window.print()">Печать</button>
+              <button type="button" onclick="window.print()">Сохранить как PDF</button>
+            </div>
           </div>
           <article class="doc">
             ${renderMarkdownToHtml(markdown)}
@@ -504,20 +544,13 @@ async function loadEditorGuide() {
       </body>
       </html>`;
 
-    const win = window.open('', '_blank', 'noopener,noreferrer');
-    if (!win) {
-      alert('Браузер заблокировал открытие новой вкладки. Разрешите всплывающие окна и попробуйте снова.');
-      return;
-    }
-
+    win.document.open();
     win.document.write(html);
     win.document.close();
   } catch (error) {
-    const fallback = window.open('', '_blank', 'noopener,noreferrer');
-    if (fallback) {
-      fallback.document.write(`<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;padding:32px;line-height:1.6;"><h2>Не удалось открыть описание</h2><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p></body></html>`);
-      fallback.document.close();
-    }
+    win.document.open();
+    win.document.write(`<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;padding:32px;line-height:1.6;"><h2>Не удалось открыть описание</h2><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p></body></html>`);
+    win.document.close();
   }
 }
 
