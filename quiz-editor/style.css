@@ -357,10 +357,23 @@ button { cursor: pointer; background: none; border: none; }
   border-bottom: none;
 }
 
+.reference-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
 .reference-key {
   color: var(--color-text-muted);
   font-weight: 600;
   text-transform: lowercase;
+}
+
+.reference-desc {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
 }
 
 .reference-value {
@@ -369,6 +382,7 @@ button { cursor: pointer; background: none; border: none; }
   font-size: 0.82rem;
   font-weight: 600;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .reference-flag {
