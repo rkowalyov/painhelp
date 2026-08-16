@@ -400,157 +400,24 @@ function syncDescriptionValues() {
 }
 
 async function loadEditorGuide() {
-  const win = window.open('', '_blank', 'noopener,noreferrer');
-  if (!win) {
-    alert('Браузер заблокировал открытие новой вкладки. Разрешите всплывающие окна и попробуйте снова.');
+  const panel = document.getElementById('guidePanel');
+  const content = document.getElementById('guideContent');
+
+  if (!panel || !content) {
     return;
   }
+
+  panel.hidden = false;
+  content.innerHTML = '<p>Загружаем описание...</p>';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   try {
     const response = await fetch('../QUIZ_GUIDE.md');
     if (!response.ok) throw new Error('Guide file not found');
     const markdown = await response.text();
-
-    const html = `<!DOCTYPE html>
-      <html lang="ru">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Описание редактора</title>
-        <style>
-          :root {
-            --bg: #f5f7fa;
-            --surface: #ffffff;
-            --text: #1a1d23;
-            --muted: #5f6b7a;
-            --border: #e2e8f0;
-            --code-bg: #f3f6fb;
-            --primary: #2f5cff;
-          }
-          * { box-sizing: border-box; }
-          body {
-            margin: 0;
-            font-family: Inter, Arial, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.7;
-          }
-          .page {
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 32px 20px 56px;
-          }
-          .toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 20px;
-            padding: 18px 20px;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(6px);
-          }
-          .toolbar-title {
-            font-size: 0.96rem;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: 0.01em;
-          }
-          .toolbar-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-          }
-          button {
-            appearance: none;
-            border: 1px solid var(--border);
-            background: #ffffff;
-            color: var(--text);
-            border-radius: 999px;
-            padding: 10px 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-          }
-          button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(47, 92, 255, 0.12);
-          }
-          .primary-btn {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #ffffff;
-          }
-          h1, h2, h3, h4 {
-            line-height: 1.25;
-            margin: 1.2em 0 0.5em;
-            color: var(--text);
-          }
-          h1 { font-size: 2rem; }
-          h2 { font-size: 1.6rem; }
-          h3 { font-size: 1.2rem; }
-          p, li { color: var(--text); }
-          ul, ol { padding-left: 1.35rem; }
-          code {
-            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.1rem 0.35rem;
-            font-size: 0.88em;
-          }
-          pre {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            overflow: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-          }
-          .doc {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-            padding: 24px 22px;
-          }
-          @media print {
-            body { background: #fff; }
-            .toolbar { display: none; }
-            .doc {
-              box-shadow: none;
-              border: none;
-              padding: 0;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="page">
-          <div class="toolbar">
-            <div class="toolbar-title">Описание редактора</div>
-            <div class="toolbar-actions">
-              <button type="button" class="primary-btn" onclick="window.print()">Печать</button>
-              <button type="button" onclick="window.print()">Сохранить как PDF</button>
-            </div>
-          </div>
-          <article class="doc">
-            ${renderMarkdownToHtml(markdown)}
-          </article>
-        </div>
-      </body>
-      </html>`;
-
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
+    content.innerHTML = renderMarkdownToHtml(markdown);
   } catch (error) {
-    win.document.open();
-    win.document.write(`<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;padding:32px;line-height:1.6;"><h2>Не удалось открыть описание</h2><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p></body></html>`);
-    win.document.close();
+    content.innerHTML = '<h3>Не удалось открыть описание</h3><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p>';
   }
 }
 
