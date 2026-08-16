@@ -411,14 +411,33 @@ async function loadEditorGuide() {
   content.innerHTML = '<p>Загружаем описание...</p>';
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  try {
-    const response = await fetch('../QUIZ_GUIDE.md');
-    if (!response.ok) throw new Error('Guide file not found');
-    const markdown = await response.text();
-    content.innerHTML = renderMarkdownToHtml(markdown);
-  } catch (error) {
-    content.innerHTML = '<h3>Не удалось открыть описание</h3><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p>';
+  const candidates = [
+    '/QUIZ_GUIDE.md',
+    './QUIZ_GUIDE.md',
+    '../QUIZ_GUIDE.md',
+    new URL('../QUIZ_GUIDE.md', window.location.href).toString(),
+    new URL('./QUIZ_GUIDE.md', window.location.href).toString()
+  ].filter((value, index, arr) => arr.indexOf(value) === index);
+
+  let guideText = null;
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) continue;
+      guideText = await response.text();
+      break;
+    } catch (error) {
+      // next candidate
+    }
   }
+
+  if (!guideText) {
+    content.innerHTML = '<h3>Не удалось открыть описание</h3><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p>';
+    return;
+  }
+
+  content.innerHTML = renderMarkdownToHtml(guideText);
 }
 
 function renderMarkdownToHtml(markdown) {
