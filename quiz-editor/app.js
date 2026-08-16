@@ -399,6 +399,29 @@ function syncDescriptionValues() {
   });
 }
 
+const FALLBACK_GUIDE_HTML = `
+  <h1>Описание редактора</h1>
+  <p>Редактор управляет структурой квиза: мета-данными, вопросами, результатами и схемой CRM-полей.</p>
+  <h2>Ключевые правила</h2>
+  <ul>
+    <li>Вопросы и ответы должны быть стабильно привязаны к CRM-полям.</li>
+    <li>Поле <code>answers_json</code> используется для хранения всех ответов квиза.</li>
+    <li>Флаги <code>chronic_if_gte_index</code> и <code>failed_treatment_if_value</code> обязательны для расчета статусов.</li>
+    <li>Раздел <code>crm_fields</code> — каноническая карта для финального payload.</li>
+  </ul>
+  <h2>Каноническая схема CRM</h2>
+  <ul>
+    <li><code>score</code> → <code>UF_CRM_1777993552</code></li>
+    <li><code>result</code> → <code>UF_CRM_1777993608</code></li>
+    <li><code>is_chronic</code> → <code>UF_CRM_1777993788</code></li>
+    <li><code>failed_treatment</code> → <code>UF_CRM_1777993848</code></li>
+    <li><code>source</code> → <code>UF_CRM_1777993881</code></li>
+    <li><code>answers_json</code> → <code>UF_CRM_1786729063</code></li>
+  </ul>
+  <h2>Печать и сохранение</h2>
+  <p>Используйте кнопку печати в браузере, чтобы сохранить документ как PDF или распечатать его для команды.</p>
+`;
+
 async function loadEditorGuide() {
   const panel = document.getElementById('guidePanel');
   const content = document.getElementById('guideContent');
@@ -408,7 +431,12 @@ async function loadEditorGuide() {
   }
 
   panel.hidden = false;
-  content.innerHTML = '<p>Загружаем описание...</p>';
+  content.innerHTML = `
+    <div class="guide-header-row">
+      <button type="button" class="btn btn-ghost guide-print-btn" onclick="window.print()">Печать</button>
+    </div>
+    <p>Загружаем описание...</p>
+  `;
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   const candidates = [
@@ -432,12 +460,13 @@ async function loadEditorGuide() {
     }
   }
 
-  if (!guideText) {
-    content.innerHTML = '<h3>Не удалось открыть описание</h3><p>Проверьте файл QUIZ_GUIDE.md в корне проекта.</p>';
-    return;
-  }
-
-  content.innerHTML = renderMarkdownToHtml(guideText);
+  const guideBody = guideText ? renderMarkdownToHtml(guideText) : FALLBACK_GUIDE_HTML;
+  content.innerHTML = `
+    <div class="guide-header-row">
+      <button type="button" class="btn btn-ghost guide-print-btn" onclick="window.print()">Печать</button>
+    </div>
+    <div class="guide-document">${guideBody}</div>
+  `;
 }
 
 function renderMarkdownToHtml(markdown) {

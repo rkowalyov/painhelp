@@ -469,34 +469,52 @@ button { cursor: pointer; background: none; border: none; }
   border-top: 1px solid rgba(148, 163, 184, 0.18);
 }
 
-.guide-readout h1,
-.guide-readout h2,
-.guide-readout h3,
-.guide-readout h4,
-.guide-readout p,
-.guide-readout li,
-.guide-readout code,
-.guide-readout strong,
-.guide-readout em {
+.guide-header-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1.25rem 0;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.guide-print-btn {
+  color: #dfe7ff;
+  border-color: rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.2);
+}
+
+.guide-document {
+  padding: 1.5rem 1.25rem 1.75rem;
   color: rgba(241, 245, 249, 0.96);
 }
 
-.guide-readout h1,
-.guide-readout h2,
-.guide-readout h3,
-.guide-readout h4 {
+.guide-document h1,
+.guide-document h2,
+.guide-document h3,
+.guide-document h4,
+.guide-document p,
+.guide-document li,
+.guide-document code,
+.guide-document strong,
+.guide-document em {
+  color: rgba(241, 245, 249, 0.96);
+}
+
+.guide-document h1,
+.guide-document h2,
+.guide-document h3,
+.guide-document h4 {
   margin-top: 1.2em;
   margin-bottom: 0.5em;
 }
 
-.guide-readout code {
+.guide-document code {
   background: rgba(148, 163, 184, 0.15);
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 0.4rem;
   padding: 0.12rem 0.4rem;
 }
 
-.guide-readout pre {
+.guide-document pre {
   background: rgba(15, 23, 42, 0.52);
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 0.8rem;
@@ -504,8 +522,8 @@ button { cursor: pointer; background: none; border: none; }
   overflow-x: auto;
 }
 
-.guide-readout ul,
-.guide-readout ol {
+.guide-document ul,
+.guide-document ol {
   padding-left: 1.3rem;
 }
 
