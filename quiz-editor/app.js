@@ -452,6 +452,8 @@ const GUIDE_MARKDOWN = `# Описание редактора
 
 Скоринг не ограничен тремя уровнями. В одном сценарии может быть любое число уровней: low/medium/high или custom keys вроде level_1, level_2, level_3.
 
+В дополнение к этому поддерживается взвешенный подсчёт по формуле \`score = option_weight * question_weight\`, где \`question_weight\` по умолчанию растёт как \`1, 10, 100, 1000...\` по порядку вопросов. Вариант с \`score: 0\` считается нулевым ответом и переводит пользователя сразу к финальному экрану.
+
 ### 1.4 Условные флаги
 
 Поддерживаются флаги:
@@ -755,6 +757,11 @@ function initFieldHelp() {
       title: 'ID вопроса',
       text: 'Внутренний идентификатор вопроса. Он используется в JSON, в логике подсчёта и в маппинге на CRM-поля. Пользователю не показывается.',
       target: 'data'
+    },
+    'q-weight': {
+      title: 'Вес вопроса',
+      text: 'Коэффициент важности вопроса. По умолчанию повышается по порядку: 1, 10, 100, 1000 и т.д. Это даёт более чёткое разделение результатов и позволяет усилить важные вопросы без раздувания опроса.',
+      target: 'logic'
     },
     'q-crm-select': {
       title: 'CRM-поле ответа',
@@ -1135,6 +1142,7 @@ function renderQuestion(idx) {
   // Bind fields
   const qText  = card.querySelector('.q-text');
   const qId    = card.querySelector('.q-id');
+  const qWeight = card.querySelector('.q-weight');
   const qCrmSelect = card.querySelector('.q-crm-select');
   const qFlag  = card.querySelector('.q-flag');
   const flagParamWrap  = card.querySelector('.q-flag-param-wrap');
@@ -1144,6 +1152,7 @@ function renderQuestion(idx) {
 
   qText.value  = q.text || '';
   qId.value    = q.id || '';
+  qWeight.value = q.question_weight ?? String(Math.pow(10, idx));
   qFlag.value  = q.flag || '';
 
   const selectedValue = String(q.crm_field || '').trim();
@@ -1182,6 +1191,10 @@ function renderQuestion(idx) {
   // Live updates
   qText.addEventListener('input', () => { questions[idx].text = qText.value; });
   qId.addEventListener('input',   () => { questions[idx].id = qId.value; });
+  qWeight.addEventListener('input', () => {
+    const next = Number.parseInt(qWeight.value, 10);
+    questions[idx].question_weight = Number.isFinite(next) ? next : 1;
+  });
   qFlag.addEventListener('change', () => {
     const fv = qFlag.value;
     questions[idx].flag = fv;
@@ -1329,6 +1342,9 @@ function syncDomToState() {
     const q = questions[idx];
     q.text      = card.querySelector('.q-text')?.value ?? q.text;
     q.id        = card.querySelector('.q-id')?.value ?? q.id;
+    const qWeightEl = card.querySelector('.q-weight');
+    const nextWeight = Number.parseInt(qWeightEl?.value || '', 10);
+    q.question_weight = Number.isFinite(nextWeight) ? nextWeight : (q.question_weight ?? 1);
     const crtSelect = card.querySelector('.q-crm-select');
     q.crm_field = crtSelect?.value || q.crm_field;
     const flagEl = card.querySelector('.q-flag');
@@ -1456,6 +1472,7 @@ document.getElementById('addQuestionBtn').addEventListener('click', () => {
     crm_field: '',
     text: '',
     flag: '',
+    question_weight: Math.pow(10, questions.length),
     options: [
       { label: '', value: '', score: 0 },
       { label: '', value: '', score: 0 }
@@ -1516,8 +1533,10 @@ function buildJson() {
         id:        q.id,
         crm_field: q.crm_field,
         text:      q.text,
+        question_weight: Number.isFinite(Number(q.question_weight)) ? Number(q.question_weight) : undefined,
         options:   q.options.map(o => ({ label: o.label, value: o.value, score: o.score }))
       };
+      if (obj.question_weight === undefined) delete obj.question_weight;
       if (q.flag) {
         obj.flag = q.flag;
         if (q.flag === 'chronic_if_gte_index' && q.chronic_threshold !== undefined) {
@@ -1808,7 +1827,14 @@ initAuthScreen();
       const opt = q.options[oi];
 
       // Record answer
-      answers[idx] = { qIdx: idx, optIdx: oi, score: opt.score ?? 0, value: opt.value, label: opt.label };
+      answers[idx] = {
+        qIdx: idx,
+        optIdx: oi,
+        score: opt.score ?? 0,
+        value: opt.value,
+        label: opt.label,
+        weight: Number(q.question_weight ?? Math.pow(10, idx))
+      };
 
       // Check flags
       if (q.flag === 'chronic_if_gte_index') {
@@ -1855,7 +1881,11 @@ initAuthScreen();
 
     document.getElementById('qpSubmit').addEventListener('click', () => {
       // Calculate score
-      totalScore = answers.reduce((sum, a) => sum + (a ? a.score : 0), 0);
+      totalScore = answers.reduce((sum, a) => {
+        if (!a) return sum;
+        const weight = Number(a.weight ?? 1);
+        return sum + ((Number(a.score) || 0) * weight);
+      }, 0);
       step = 'result';
       render();
     });

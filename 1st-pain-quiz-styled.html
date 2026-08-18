@@ -672,10 +672,12 @@ function calcResult() {
   let isChronic = false;
   let failedTreatment = false;
 
-  qs.forEach(q => {
+  qs.forEach((q, qIndex) => {
     const val = state.answers[q.id];
     const opt = q.options.find(o => o.value === val);
-    if (opt) score += opt.score;
+    const questionWeight = Number(q.question_weight ?? Math.pow(10, qIndex));
+    const optionWeight = Number(opt ? opt.score : 0);
+    if (opt) score += optionWeight * questionWeight;
     crm_answers[q.id] = val;
 
     if (q.flag === "chronic_if_gte_index") {
