@@ -452,7 +452,7 @@ const GUIDE_MARKDOWN = `# Описание редактора
 
 Скоринг не ограничен тремя уровнями. В одном сценарии может быть любое число уровней: low/medium/high или custom keys вроде level_1, level_2, level_3.
 
-В дополнение к этому поддерживается взвешенный подсчёт по формуле \`score = option_weight * question_weight\`, где \`question_weight\` по умолчанию растёт как \`1, 10, 100, 1000...\` по порядку вопросов. Вариант с \`score: 0\` считается нулевым ответом и переводит пользователя сразу к финальному экрану.
+Поддерживается взвешенный подсчёт по формуле \`score = option_weight * question_weight\`. Поле \`question_weight\` необязательное: если оно не задано, используется вес \`1\`, поэтому старые сценарии сохраняют прежнюю шкалу и пороги. Для взвешенного сценария коэффициент можно задать явно, например \`1, 10, 100, 1000...\`. Вариант с \`score: 0\` считается нулевым ответом и переводит пользователя сразу к финальному экрану.
 
 ### 1.4 Условные флаги
 
@@ -760,7 +760,7 @@ function initFieldHelp() {
     },
     'q-weight': {
       title: 'Вес вопроса',
-      text: 'Коэффициент важности вопроса. По умолчанию повышается по порядку: 1, 10, 100, 1000 и т.д. Это даёт более чёткое разделение результатов и позволяет усилить важные вопросы без раздувания опроса.',
+      text: 'Необязательный коэффициент важности вопроса. Если поле пустое, используется вес 1 и старые пороги скоринга сохраняются. Явно заданные значения, например 10 или 100, усиливают вклад вопроса в итоговый балл.',
       target: 'logic'
     },
     'q-crm-select': {
@@ -1152,7 +1152,7 @@ function renderQuestion(idx) {
 
   qText.value  = q.text || '';
   qId.value    = q.id || '';
-  qWeight.value = q.question_weight ?? String(Math.pow(10, idx));
+  qWeight.value = q.question_weight ?? '';
   qFlag.value  = q.flag || '';
 
   const selectedValue = String(q.crm_field || '').trim();
@@ -1472,7 +1472,7 @@ document.getElementById('addQuestionBtn').addEventListener('click', () => {
     crm_field: '',
     text: '',
     flag: '',
-    question_weight: Math.pow(10, questions.length),
+    question_weight: undefined,
     options: [
       { label: '', value: '', score: 0 },
       { label: '', value: '', score: 0 }
@@ -1833,7 +1833,7 @@ initAuthScreen();
         score: opt.score ?? 0,
         value: opt.value,
         label: opt.label,
-        weight: Number(q.question_weight ?? Math.pow(10, idx))
+        weight: Number(q.question_weight ?? 1)
       };
 
       // Check flags
