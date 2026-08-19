@@ -176,7 +176,7 @@ function normalizeScoring(scoring) {
         id: lvl.id || `level_${i + 1}`,
         max: Number(lvl.max),
         title: lvl.title || '',
-        text: lvl.text || '',
+        text: String(lvl.text ?? lvl.description ?? '').trim(),
         cta: Array.isArray(lvl.cta) ? lvl.cta : []
       });
     });
@@ -187,7 +187,7 @@ function normalizeScoring(scoring) {
         id: id || `level_${i + 1}`,
         max: Number(src.max),
         title: src.title || '',
-        text: src.text || '',
+        text: String(src.text ?? src.description ?? '').trim(),
         cta: Array.isArray(src.cta) ? src.cta : []
       });
     });
@@ -1509,10 +1509,12 @@ function buildJson() {
   document.querySelectorAll('.scoring-card').forEach((card, idx) => {
     const levelId = card.dataset.level || `level_${idx + 1}`;
     const max = parseInt(card.querySelector('.score-max')?.value, 10);
+    const savedLevel = scoringLevels.find(level => level.id === levelId);
+    const textField = card.querySelector('.score-text');
     scoringOut[levelId] = {
       max: Number.isFinite(max) ? max : 0,
       title: card.querySelector('.score-title')?.value?.trim() || '',
-      text: card.querySelector('.score-text')?.value?.trim() || '',
+      text: textField?.value?.trim() || savedLevel?.text || '',
       cta: getCtaFromDom(levelId)
     };
   });
@@ -1917,7 +1919,7 @@ initAuthScreen();
           <span class="qp-score-label">баллов</span>
         </div>
         <div class="qp-result-title">${esc(levelData.title || '')}</div>
-        <div class="qp-result-text">${esc(levelData.text || '')}</div>
+        <div class="qp-result-text">${esc(levelData.text || 'Текст результата не задан')}</div>
         <div class="qp-result-ctas">${ctas}</div>
         ${flagsHtml}
       </div>`;
