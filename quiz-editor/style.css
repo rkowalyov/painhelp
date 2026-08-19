@@ -1354,6 +1354,14 @@ button { cursor: pointer; background: none; border: none; }
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
+.qp-preview-note {
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+}
 .qp-email-fear {
   font-size: var(--text-xs);
   color: var(--color-error, #dc2626);

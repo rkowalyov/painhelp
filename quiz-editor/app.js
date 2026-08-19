@@ -1868,11 +1868,12 @@ initAuthScreen();
       <div class="qp-email-screen">
         <div class="qp-email-title">${esc(m.email_title || 'Осталось немного')}</div>
         <div class="qp-email-sub">${esc(m.email_subtitle || '')}</div>
+        <div class="qp-preview-note">Предпросмотр: данные не отправляются. Поля можно оставить пустыми.</div>
         ${m.email_fear ? `<div class="qp-email-fear">⚠️ ${esc(m.email_fear)}</div>` : ''}
         <div class="qp-contact-fields">
           <input type="text"  placeholder="Имя" id="qpName" />
-          <input type="text"  placeholder="Фамилия" id="qpSurname" />
           <input type="text"  placeholder="Отчество" id="qpPatronymic" />
+          <input type="text"  placeholder="Фамилия" id="qpSurname" />
           <input type="email" placeholder="Email" id="qpEmail" />
           <input type="tel"   placeholder="Телефон" id="qpPhone" />
         </div>
