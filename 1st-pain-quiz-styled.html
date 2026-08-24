@@ -425,6 +425,8 @@ html{
 const DEFAULT_SCENARIO_URL = "./scenarios/pain-v1.json";
 const SCENARIO_QUERY_KEY = "quiz";
 const SKIP_COVER_QUERY_KEY = "skip_cover";
+const SCENARIO_FETCH_TIMEOUT_MS = 12000;
+const SCENARIO_CACHE_PREFIX = "painhelp_scenario_cache:";
 
 function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name) || "";
@@ -454,6 +456,23 @@ function resolveScenarioUrl() {
 const SCENARIO_URL = resolveScenarioUrl();
 console.log("[QUIZ] Scenario URL:", SCENARIO_URL);
 
+function getCachedScenario() {
+  try {
+    const raw = localStorage.getItem(SCENARIO_CACHE_PREFIX + SCENARIO_URL);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function cacheScenario(data) {
+  try {
+    localStorage.setItem(SCENARIO_CACHE_PREFIX + SCENARIO_URL, JSON.stringify(data));
+  } catch (e) {
+    // Ignore storage failures and continue with the network response.
+  }
+}
+
 /* ===================== STATE ===================== */
 let scenario = null;
 let state = { step: 0, answers: {}, email: "" };
@@ -461,10 +480,28 @@ let currentOptions = [];
 
 /* ===================== INIT ===================== */
 window.addEventListener("DOMContentLoaded", async () => {
+  const cachedScenario = getCachedScenario();
+  const loadingText = document.getElementById("loadingText");
+  const quizCard = document.querySelector(".quiz-card");
+  if (loadingText) loadingText.textContent = "Загружаем квиз…";
+  if (quizCard) quizCard.classList.add("is-loading");
+  showScreen("screen-loading");
+
   try {
-    const res = await fetch(SCENARIO_URL);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), SCENARIO_FETCH_TIMEOUT_MS);
+    let res;
+    try {
+      res = await fetch(SCENARIO_URL, {
+        cache: "default",
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if (!res.ok) throw new Error("HTTP " + res.status);
     scenario = await res.json();
+    cacheScenario(scenario);
     
     // Проверка режима редактирования
     const editMode = getQueryParam("edit");
@@ -486,12 +523,25 @@ window.addEventListener("DOMContentLoaded", async () => {
     buildHero();
     if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
       startQuiz();
+    } else {
+      showScreen("screen-hero");
     }
     console.log("[QUIZ] Scenario loaded:", SCENARIO_URL);
   } catch (e) {
     console.error("[QUIZ] Failed to load scenario:", e);
+    if (cachedScenario) {
+      scenario = cachedScenario;
+      console.warn("[QUIZ] Using cached scenario after load failure:", SCENARIO_URL);
+      buildHero();
+      if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
+        startQuiz();
+      } else {
+        showScreen("screen-hero");
+      }
+      return;
+    }
     document.querySelector(".quiz-card").innerHTML =
-      '<div style="padding:2rem;color:#a12c7b;font-family:sans-serif">⚠️ Не удалось загрузить сценарий квиза.<br><small>' + e.message + '</small></div>';
+      '<div style="padding:2rem;color:#a12c7b;font-family:sans-serif">⚠️ Не удалось загрузить сценарий квиза.<br><small>Проверьте соединение и обновите страницу.</small></div>';
   }
 });
 
