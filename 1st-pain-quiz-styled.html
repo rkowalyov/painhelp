@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"></noscript>
+<link rel="preload" href="./scenarios/pain-v1.json" as="fetch" crossorigin="anonymous">
 <style>
 /* =============================================
    SCENARIO_URL — единственная строка для смены сценария
@@ -488,6 +489,17 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (quizCard) quizCard.classList.add("is-loading");
   showScreen("screen-loading");
 
+  // On repeat visits, do not make the user wait for the network before showing the quiz.
+  if (cachedScenario) {
+    scenario = cachedScenario;
+    buildHero();
+    if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
+      startQuiz();
+    } else {
+      showScreen("screen-hero");
+    }
+  }
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), SCENARIO_FETCH_TIMEOUT_MS);
@@ -521,11 +533,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     
     console.log("[QUIZ] Normal quiz mode");
-    buildHero();
-    if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
-      startQuiz();
-    } else {
-      showScreen("screen-hero");
+    if (!cachedScenario) {
+      buildHero();
+      if (isTruthyParam(getQueryParam(SKIP_COVER_QUERY_KEY))) {
+        startQuiz();
+      } else {
+        showScreen("screen-hero");
+      }
     }
     console.log("[QUIZ] Scenario loaded:", SCENARIO_URL);
   } catch (e) {
