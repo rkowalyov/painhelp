@@ -192,7 +192,7 @@ totalScore = sum(score)
 
 Это единый согласованный набор, который должен быть одинаковым в сценариях, редакторе и CRM-логике.
 
-https://quiz.painhelp.ru/1st-pain-quiz-styled.html?quiz=pain-v1&edit=Y
+https://painhelp.vercel.app/1st-pain-quiz-styled.html?quiz=pain-v1&edit=Y
 ```
 
 **Процесс:**
