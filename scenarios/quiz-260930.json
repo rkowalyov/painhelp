@@ -1,0 +1,257 @@
+{
+  "meta": {
+    "title": "Проверьте свою боль за минуту",
+    "subtitle": "Ответьте на 6 вопросов и получите понимание, стоит ли обращаться к специалисту",
+    "trust_badges": [
+      "Без регистрации",
+      "Анонимно",
+      "Основано на опыте врачей"
+    ],
+    "cta_start": "Пройти тест",
+    "source_label": "ШИА-квиз-260930",
+    "email_title": "Мы почти готовы показать результат",
+    "email_subtitle": "Оставьте email, чтобы получить результат и рекомендации и не потерять их",
+    "email_fear": "Боль, которая длится долго, может становиться хронической"
+  },
+  "questions": [
+    {
+      "id": "pain_location",
+      "crm_field": "PAIN_LOCATION",
+      "text": "Где у Вас болит?",
+      "question_weight": 1,
+      "options": [
+        {
+          "label": "Последние 2 недели ничего не болит",
+          "value": "poslednie-2-nedeli",
+          "score": 0
+        },
+        {
+          "label": "голова",
+          "value": "golova",
+          "score": 1
+        },
+        {
+          "label": "лицо",
+          "value": "lico",
+          "score": 2
+        },
+        {
+          "label": "шея",
+          "value": "sheya",
+          "score": 3
+        },
+        {
+          "label": "рука или руки",
+          "value": "ruka-ili-ruki",
+          "score": 4
+        },
+        {
+          "label": "грудной отдел",
+          "value": "grudnoy-otdel",
+          "score": 5
+        },
+        {
+          "label": "поясница и/или крестец",
+          "value": "poyasnica-i-ili-krestec",
+          "score": 6
+        },
+        {
+          "label": "пах и/или ягодица",
+          "value": "pah-i-ili-yagodica",
+          "score": 7
+        },
+        {
+          "label": "нога или ноги",
+          "value": "noga-ili-nogi",
+          "score": 8
+        },
+        {
+          "label": "другое",
+          "value": "drugoe",
+          "score": 9
+        }
+      ]
+    },
+    {
+      "id": "pain_intensity",
+      "crm_field": "PAIN_INTENSITY",
+      "text": "Оцените свою боль по 10-ти бальной шкале максимум за последние 2 недели",
+      "question_weight": 1,
+      "options": [
+        {
+          "label": "не замечаю",
+          "value": "ne-zamechayu",
+          "score": 0
+        },
+        {
+          "label": "1-3 балла",
+          "value": "1-3-balla",
+          "score": 1
+        },
+        {
+          "label": "4-6 балов",
+          "value": "4-6-balov",
+          "score": 2
+        },
+        {
+          "label": "7-10 баллов",
+          "value": "7-10-ballov",
+          "score": 3
+        }
+      ]
+    },
+    {
+      "id": "pain_duration",
+      "crm_field": "PAIN_DURATION",
+      "text": "Сколько длится Ваша боль?",
+      "question_weight": 1,
+      "options": [
+        {
+          "label": "менее 3 месяцев",
+          "value": "menee-3-mesyacev",
+          "score": 0
+        },
+        {
+          "label": "3 месяца и более",
+          "value": "3-mesyaca-i-bolee",
+          "score": 1
+        }
+      ],
+      "flag": "chronic_if_gte_index",
+      "chronic_threshold": 1
+    },
+    {
+      "id": "pain_sensations",
+      "crm_field": "JSON",
+      "text": "Какими ощущениями сопровождается обычно Ваша боль?",
+      "question_weight": 1,
+      "options": [
+        {
+          "label": "не могу сказать",
+          "value": "ne-mogu-skazat",
+          "score": 0
+        },
+        {
+          "label": "ноющая",
+          "value": "noyushchaya",
+          "score": 1
+        },
+        {
+          "label": "давящая, распиарющая",
+          "value": "davyashchaya",
+          "score": 1
+        },
+        {
+          "label": "колющая или режущая",
+          "value": "kolyushchaya-ili",
+          "score": 1
+        },
+        {
+          "label": "покалывающая, жгущая",
+          "value": "pokalyvayushchaya",
+          "score": 2
+        },
+        {
+          "label": "болезненное ощущение холода",
+          "value": "boleznennoe",
+          "score": 2
+        },
+        {
+          "label": "онемение",
+          "value": "onemenie",
+          "score": 2
+        },
+        {
+          "label": "зуд, ощущение ползающих мурашек",
+          "value": "zud-oshchushchenie",
+          "score": 2
+        },
+        {
+          "label": "ощущение как от удара током",
+          "value": "oshchushchenie-kak-ot",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "doctor_visit",
+      "crm_field": "UF_CRM_1777993749",
+      "text": "Вы уже были на приеме у специалиста  и получили рекомендации по лечению хронической боли?",
+      "question_weight": 1,
+      "options": [
+        {
+          "label": "не ходил к врачу",
+          "value": "ne-hodil-k-vrachu",
+          "score": 0
+        },
+        {
+          "label": "ходил к врачу",
+          "value": "hodil-k-vrachu",
+          "score": 1
+        }
+      ],
+      "flag": "failed_treatment_if_value",
+      "failed_treatment_value": "hodil-k-vrachu"
+    },
+    {
+      "id": "treatment_helped",
+      "crm_field": "UF_CRM_1777993848",
+      "text": "Назначенное лечение Вам не помогло?",
+      "question_weight": 1,
+      "options": [
+        {
+          "label": "не помогло",
+          "value": "ne-pomoglo",
+          "score": 0
+        },
+        {
+          "label": "помогло",
+          "value": "pomoglo",
+          "score": 1
+        }
+      ],
+      "flag": "failed_treatment_if_value",
+      "failed_treatment_value": "ne-pomoglo"
+    }
+  ],
+  "scoring": {
+    "level_1": {
+      "max": 9,
+      "title": "",
+      "text": "это не хрон боль...",
+      "cta": []
+    },
+    "level_2": {
+      "max": 199,
+      "title": "",
+      "text": "принимайте НПВС когда появится боль 1-2 дня",
+      "cta": []
+    },
+    "level_3": {
+      "max": 699,
+      "title": "",
+      "text": "надо проконсультироваться",
+      "cta": []
+    },
+    "level_4": {
+      "max": 1999,
+      "title": "",
+      "text": "надо еще раз сходить к врачу",
+      "cta": []
+    },
+    "level_5": {
+      "max": 19999,
+      "title": "",
+      "text": "надо найти другого врача",
+      "cta": []
+    }
+  },
+  "crm_fields": {
+    "score": "",
+    "result": "",
+    "is_chronic": "",
+    "failed_treatment": "",
+    "source": "",
+    "answers_json": ""
+  }
+}
