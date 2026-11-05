@@ -33,8 +33,9 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-const limiter = rateLimit({ windowMs: 60 * 1000, max: 60 });
-app.use(limiter);
+// Rate limit только для API-роутов: статика и /health не должны упираться в лимит 60 req/min
+const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 60 });
+app.use('/api', apiLimiter);
 
 app.use(express.static(path.join(__dirname)));
 
