@@ -1,5 +1,45 @@
-Стек проекта: React 19, TypeScript, Next.js (App Router), Tailwind CSS.
-Язык общения: Всегда отвечай на русском языке.
-Стиль кода: Используй только функциональные компоненты, стрелочные функции. Для стейта — хуки.
-Базовые правила: База данных работает через Prisma. Не используй сторонние библиотеки без спроса.
-Архитектура: Все UI-компоненты лежат в /components/ui, а бизнес-логика в /hooks.
+# PainHelp — платформа квизов для Bitrix24
+
+## Стек
+- Фронтенд: статический HTML/CSS/vanilla JS, без сборки и фреймворков.
+  - Движок квиза: `1st-pain-quiz-styled.html` (всё в одном файле).
+  - Конструктор: `quiz-editor/` (vanilla JS SPA: app.js, index.html, style.css).
+- Backend-прокси: Node.js + Express (`server.js`): helmet, express-rate-limit, cors, dotenv.
+- Serverless API: Vercel-функции в `api/` (ESM, `export default`): lead.js, confirm.js, auth.js.
+- Сценарии квизов: JSON в `scenarios/`.
+- Интеграция: Bitrix24 REST webhooks (crm.lead.add / crm.lead.update / crm.lead.get).
+
+## Язык
+- Всегда отвечай на русском языке. Комментарии и документация — на русском.
+
+## Ключевые правила
+- Не используй сторонние библиотеки без спроса.
+- Секреты (webhook'и, токены) — только через переменные окружения, никогда в коде и коммитах.
+- Не коммить `.env`, `node_modules/`, `.DS_Store`.
+- Фронтенд и прокси должны работать на одном хосте: браузер ходит на `/api/lead` без CORS-настроек.
+
+## Переменные окружения
+- `BITRIX_WEBHOOK` — webhook crm.lead.add (обязательный).
+- `BITRIX_CONFIRM_WEBHOOK` — webhook для подтверждения лида (опционально, fallback на BITRIX_WEBHOOK).
+- `ALLOWED_ORIGINS` — список разрешённых origin через запятую (CORS).
+- `EDITOR_USERS` — пользователи редактора в формате "user1:pass1,user2:pass2".
+- `EDITOR_TOKEN_SECRET` — секрет для HMAC-токена редактора.
+
+## Каноническая схема CRM-полей (не менять без согласования)
+- `score` → `UF_CRM_1777993552`
+- `result` → `UF_CRM_1777993608`
+- `is_chronic` → `UF_CRM_1777993788`
+- `failed_treatment` → `UF_CRM_1777993848`
+- `source` → `UF_CRM_1777993881`
+- `answers_json` → `UF_CRM_1786729063`
+
+## Скоринг
+- Взвешенный: `total = sum(option_score * question_weight)`; `question_weight` необязателен (по умолчанию 1).
+- Вариант с `score: 0` завершает квиз на текущем шаге.
+- `result` хранит человекочитаемый текст результата; уровней может быть 2, 3, 4+ (`low/medium/high` — лишь один из наборов).
+
+## Запуск
+- Статика локально: `python3 -m http.server 8000`.
+- Прокси локально: `npm run dev` (запускает `server.js`).
+- Деплой: Vercel (`api/*`) или Node-хостинг (`server.js`). План миграции — в `HOSTING_MIGRATION.md`.
+
