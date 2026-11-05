@@ -376,7 +376,7 @@ cd painhelp
 docker build -t painhelp-proxy .
 docker run -d -p 3000:3000 \
   -e BITRIX_WEBHOOK="https://interpain.bitrix24.ru/rest/1/YOUR_KEY/crm.lead.add" \
-  -e ALLOWED_ORIGINS="https://yourdomain.com" \
+  -e ALLOWED_ORIGINS="https://forms.eduinterpain.ru,https://eduinterpain.ru,https://www.eduinterpain.ru,https://interpain.bitrix24.ru" \
   painhelp-proxy
 ```
 
@@ -386,7 +386,7 @@ docker run -d -p 3000:3000 \
 
 - Загрузите репозиторий на Render.
 - В разделе Environment → Environment Variables добавьте `BITRIX_WEBHOOK`.
-- При необходимости установите `ALLOWED_ORIGINS`.
+- Установите `ALLOWED_ORIGINS` — рекомендуемое для продакшена значение см. в разделе «CORS: разрешённые домены» ниже.
 - Render автоматически запустит `npm install` и `npm start`.
 
 4) Vercel (самый простой)
@@ -404,6 +404,28 @@ Vercel автоматически развернёт статические ст
 Security notes:
 - `.env` должен оставаться локальным и не попадать в git.
 - В production храните `BITRIX_WEBHOOK` в защищённых переменных окружения провайдера.
-- Используйте `ALLOWED_ORIGINS` для ограничения CORS.
+- Используйте `ALLOWED_ORIGINS` для ограничения CORS (рекомендуемое значение — ниже).
+
+### CORS: разрешённые домены (`ALLOWED_ORIGINS`)
+
+```bash
+ALLOWED_ORIGINS=https://forms.eduinterpain.ru,https://eduinterpain.ru,https://www.eduinterpain.ru,https://interpain.bitrix24.ru
+```
+
+- `forms.eduinterpain.ru` — обязателен: браузер шлёт заголовок `Origin` даже для same-origin POST, без него сломается отправка формы.
+- `eduinterpain.ru`, `www.eduinterpain.ru` — основной сайт компании (на случай вставки формы не через iframe).
+- `interpain.bitrix24.ru` — портал Битрикс24 (виджеты CRM и открытые линии).
+- Старые хостинги (`painhelp.vercel.app`, `rkowalyov.github.io`) сознательно не включены — миграция завершена.
+- Пустое значение означает «разрешено всем» — в продакшене так оставлять нельзя.
+
+Проверка после настройки (первая команда не должна вернуть заголовок, вторая — должна):
+
+```bash
+curl -sD - -o /dev/null -X OPTIONS https://forms.eduinterpain.ru/api/lead \
+  -H 'Origin: https://evil.example' -H 'Access-Control-Request-Method: POST' | grep -i access-control-allow-origin
+
+curl -sD - -o /dev/null -X OPTIONS https://forms.eduinterpain.ru/api/lead \
+  -H 'Origin: https://eduinterpain.ru' -H 'Access-Control-Request-Method: POST' | grep -i access-control-allow-origin
+```
 - Rate limit уже включён в proxy, но для продакшена стоит добавить логирование и мониторинг.
 
