@@ -1,0 +1,61 @@
+# Зависимости и пакеты (самый тяжелый мусор)
+node_modules/
+bower_components/
+jspm_packages/
+.pnpm-store/
+
+# Папки сборки, дистрибутивов и кэша
+dist/
+build/
+out/
+.next/
+.nuxt/
+.docusaurus/
+.cache/
+.parcel-cache/
+.turbo/
+reports/
+
+# Логи и временные файлы системы/редакторов
+*.log
+logs/
+*.log.*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Окружения и секреты (чтобы ИИ случайно не прочитал ваши пароли)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+venv/
+.venv/
+env/
+RCS/
+
+# Тесты и покрытие (опционально, если файлов слишком много)
+coverage/
+.nyc_output/
+
+# Большие медиафайлы и документация (ИИ они не нужны для кодинга)
+*.mp4
+*.mp3
+*.wav
+*.pdf
+*.zip
+*.tar.gz
+*.rar
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg

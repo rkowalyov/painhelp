@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Проверь свою боль — квиз</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-soft: #f9f8f5;
+      --border-subtle: rgba(40,37,29,0.12);
+      --text: #1e1c17;
+      --text-muted: #6b6861;
+      --text-faint: #b0afa9;
+      --primary: #006b70;
+      --primary-soft: #e0eeec;
+      --primary-strong: #003a3e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: 'Satoshi','system-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #fdfaf3 0, #f7f6f2 42%, #f0ede7 100%);
+      color: var(--text);
+    }
+    .shell {
+      max-width: 640px;
+      width: 100%;
+      background: var(--surface);
+      border-radius: 24px;
+      box-shadow: 0 18px 60px rgba(30,28,23,0.18);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .top-strip {
+      height: 3px;
+      background: var(--surface-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    .top-strip-fill {
+      position: absolute;
+      inset: 0;
+      width: 0;
+      background: linear-gradient(90deg, #006b70, #1b8794);
+      transition: width .35s cubic-bezier(.16,1,.3,1);
+    }
+    .inner {
+      padding: 28px 26px 24px;
+    }
+    @media (max-width: 480px){ .inner { padding: 22px 18px 20px; } }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--primary-strong);
+      margin-bottom: 10px;
+    }
+    .eyebrow-dot {
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 0 0 0 6px rgba(0,107,112,0.2);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: .55; }
+    }
+    .hero-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: clamp(24px, 4vw, 30px);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .hero-title em { color: var(--primary); font-style: italic; }
+    .hero-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; max-width: 46ch; }
+
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-bottom: 18px;
+    }
+    .trust-pill::before { content: '• '; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all .18s cubic-bezier(.16,1,.3,1);
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      width: 100%;
+      box-shadow: 0 10px 28px rgba(0,107,112,0.34);
+    }
+    .btn-primary:hover {
+      background: #005258;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(0,107,112,0.4);
+    }
+    .btn-primary:active { transform: translateY(0); box-shadow: 0 6px 16px rgba(0,107,112,0.3); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform:none; box-shadow:none; }
+
+    .step-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-faint); margin-bottom: 6px; }
+    .question { font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; margin-bottom: 6px; }
+    .hint { font-size: 12px; color: var(--text-faint); margin-bottom: 14px; }
+
+    .options { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-direction: column; gap: 8px; }
+    .opt { position: relative; }
+    .opt input { position: absolute; opacity: 0; pointer-events: none; }
+    .opt label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-soft);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .18s cubic-bezier(.16,1,.3,1);
+    }
+    .opt-dot {
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      border: 2px solid rgba(40,37,29,0.25);
+      margin-top: 2px;
+      background: #fff;
+    }
+    .opt input:checked + label {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary-strong);
+    }
+    .opt input:checked + label .opt-dot {
+      border-color: var(--primary);
+      background: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,107,112,0.2);
+    }
+    .opt input:checked + label .opt-dot::after {
+      content: '';
+      display: block;
+      width: 8px; height: 8px;
+      border-radius: 999px;
+      background: #fff;
+      margin: 2px;
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label { display:block; font-size: 13px; margin-bottom: 4px; }
+    .field input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-soft);
+      font-size: 14px;
+    }
+    .field input.error { border-color: #b91c1c; }
+    .field-error { font-size: 11px; color: #b91c1c; display:none; margin-top:3px; }
+    .field-error.visible { display:block; }
+
+    .status {
+      margin-top: 10px;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      display: none;
+    }
+    .status.ok { background:#ecfdf3; color:#166534; }
+    .status.err { background:#fef2f2; color:#b91c1c; }
+
+    .badge { display:inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; margin-bottom: 10px; }
+    .badge.low { background:#ecfdf3; color:#15803d; }
+    .badge.medium { background:#fffbeb; color:#b45309; }
+    .badge.high { background:#fef2f2; color:#b91c1c; }
+
+    .res-title { font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; margin-bottom: 6px; }
+    .res-text { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
+    .res-extra { font-size: 13px; color: var(--text-faint); margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="top-strip"><div class="top-strip-fill" id="progressFill"></div></div>
+  <div class="inner">
+
+    <div id="screen-start">
+      <div class="eyebrow"><span class="eyebrow-dot"></span>Бесплатный тест</div>
+      <h1 class="hero-title">Проверьте свою боль <em>за 1 минуту</em></h1>
+      <p class="hero-sub">Ответьте на 5 вопросов и узнайте, стоит ли обращаться к специалисту.</p>
+      <div class="trust-row">
+        <span class="trust-pill">Без регистрации</span>
+        <span class="trust-pill">Анонимно</span>
+        <span class="trust-pill">Основано на опыте врачей</span>
+      </div>
+      <button class="btn btn-primary" onclick="startQuiz()">Пройти тест</button>
+    </div>
+
+    <div id="screen-q" style="display:none">
+      <div class="step-label" id="stepLabel"></div>
+      <div class="question" id="qText"></div>
+      <div class="hint">Выберите один вариант</div>
+      <ul class="options" id="qOptions"></ul>
+      <button class="btn btn-primary" id="btnNext" onclick="nextStep()" disabled>Далее</button>
+    </div>
+
+    <div id="screen-email" style="display:none">
+      <div class="step-label">Остался последний шаг</div>
+      <div class="question">Мы почти готовы показать результат</div>
+      <p class="hero-sub" style="font-size:13px;margin-bottom:14px">Оставьте email, чтобы получить результат и рекомендации и не потерять их.</p>
+      <div class="field">
+        <label for="email">Email *</label>
+        <input id="email" type="email" placeholder="you@example.com">
+        <div class="field-error" id="emailErr">Введите корректный email</div>
+      </div>
+      <button class="btn btn-primary" onclick="submitQuiz()">Получить результат</button>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div id="screen-result" style="display:none">
+      <div class="badge" id="resBadge"></div>
+      <div class="res-title" id="resTitle"></div>
+      <div class="res-text" id="resText"></div>
+      <div class="res-extra" id="resExtra"></div>
+      <div class="status" id="crmStatus"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  { id: 'q1', text: 'Где вы чаще всего чувствуете боль?', options: [
+    { value: 'head',   label: 'Голова',                     score: 1 },
+    { value: 'back',   label: 'Спина',                      score: 2 },
+    { value: 'neck',   label: 'Шея',                        score: 2 },
+    { value: 'joints', label: 'Суставы',                    score: 2 },
+    { value: 'other',  label: 'Другое',                     score: 1 },
+  ]},
+  { id: 'q2', text: 'Как давно появилась боль?', options: [
+    { value: 'short',   label: 'Несколько дней',    score: 0 },
+    { value: 'weeks',   label: 'Несколько недель',  score: 1 },
+    { value: 'months',  label: 'Несколько месяцев', score: 2 },
+    { value: 'chronic', label: 'Более 6 месяцев',   score: 4 },
+  ]},
+  { id: 'q3', text: 'Насколько сильная боль?', options: [
+    { value: 'low',       label: 'Слабая, почти не мешает', score: 0 },
+    { value: 'medium',    label: 'Умеренная',               score: 1 },
+    { value: 'high',      label: 'Сильная',                 score: 2 },
+    { value: 'very_high', label: 'Очень сильная',           score: 3 },
+  ]},
+  { id: 'q4', text: 'Насколько боль влияет на вашу жизнь?', options: [
+    { value: 'none',     label: 'Практически не влияет',               score: 0 },
+    { value: 'moderate', label: 'Иногда мешает',                        score: 1 },
+    { value: 'strong',   label: 'Сильно влияет на повседневные дела',  score: 3 },
+  ]},
+  { id: 'q5', text: 'Обращались ли вы к врачу с этой проблемой?', options: [
+    { value: 'no',         label: 'Нет',                        score: 2 },
+    { value: 'no_result',  label: 'Да, но лечение не помогло', score: 3 },
+    { value: 'treatment',  label: 'Да, сейчас прохожу лечение',score: 1 },
+  ]},
+];
+
+let currentIndex = 0;
+let answers = {};
+let scores = {};
+
+const WEBHOOK_URL = 'https://interpain.bitrix24.ru/rest/1/aigq909p2tgc5twx/crm.lead.add.json';
+
+function el(id){ return document.getElementById(id); }
+
+function updateProgress(){
+  const fill = el('progressFill');
+  const pct = Math.round((currentIndex / (QUESTIONS.length+1)) * 100);
+  fill.style.width = pct + '%';
+}
+
+function startQuiz(){
+  el('screen-start').style.display = 'none';
+  el('screen-q').style.display = 'block';
+  currentIndex = 0;
+  renderQuestion();
+  updateProgress();
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[currentIndex];
+  el('stepLabel').textContent = (currentIndex+1) + ' из ' + QUESTIONS.length + ' вопросов';
+  el('qText').textContent = q.text;
+  const list = el('qOptions');
+  list.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const li = document.createElement('li');
+    li.className = 'opt';
+    const id = q.id + '_' + idx;
+    li.innerHTML = `
+      <input type="radio" name="${q.id}" id="${id}" value="${opt.value}" data-score="${opt.score}">
+      <label for="${id}">
+        <span class="opt-dot"></span>
+        <span>${opt.label}</span>
+      </label>`;
+    list.appendChild(li);
+  });
+  el('btnNext').disabled = true;
+  list.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', () => {
+      answers[q.id] = input.value;
+      scores[q.id] = Number(input.dataset.score || 0);
+      el('btnNext').disabled = false;
+    });
+  });
+}
+
+function nextStep(){
+  if (currentIndex < QUESTIONS.length-1){
+    currentIndex++;
+    renderQuestion();
+    updateProgress();
+  } else {
+    el('screen-q').style.display = 'none';
+    el('screen-email').style.display = 'block';
+    currentIndex++;
+    updateProgress();
+  }
+}
+
+function validateEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+function submitQuiz(){
+  const emailInput = el('email');
+  const emailErr = el('emailErr');
+  const status = el('status');
+  status.style.display = 'none';
+
+  const email = emailInput.value.trim();
+  if(!validateEmail(email)){
+    emailInput.classList.add('error');
+    emailErr.classList.add('visible');
+    return;
+  }
+  emailInput.classList.remove('error');
+  emailErr.classList.remove('visible');
+
+  const totalScore = (scores.q1||0)+(scores.q2||0)+(scores.q3||0)+(scores.q4||0)+(scores.q5||0);
+  const category = totalScore >= 8 ? 'high' : totalScore >= 4 ? 'medium' : 'low';
+  const isChronic = answers.q2 === 'months' || answers.q2 === 'chronic';
+  const failedTx  = answers.q5 === 'no_result';
+
+  renderResult(totalScore, category, isChronic, failedTx);
+
+  el('screen-email').style.display = 'none';
+  el('screen-result').style.display = 'block';
+  const crmStatus = el('crmStatus');
+  crmStatus.className = 'status';
+  crmStatus.style.display = 'block';
+  crmStatus.textContent = 'Отправляем данные в CRM...';
+
+  const payload = {
+    fields: {
+      TITLE: 'Квиз PainHelp — ' + email,
+      EMAIL: [{ VALUE: email, VALUE_TYPE: 'WORK' }],
+      UF_CRM_1777993552: totalScore,
+      UF_CRM_1777993608: category,
+      UF_CRM_1777993643: answers.q1 || '',
+      UF_CRM_1777993660: answers.q2 || '',
+      UF_CRM_1777993688: answers.q3 || '',
+      UF_CRM_1777993717: answers.q4 || '',
+      UF_CRM_1777993749: answers.q5 || '',
+      UF_CRM_1777993788: isChronic ? 'Y' : 'N',
+      UF_CRM_1777993848: failedTx ? 'Y' : 'N',
+      UF_CRM_1777993881: 'quiz'
+    }
+  };
+
+  console.log('[QUIZ] Payload:', payload);
+
+  fetch(WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => {
+    console.log('[QUIZ] HTTP status:', r.status);
+    return r.json();
+  })
+  .then(data => {
+    console.log('[QUIZ] Response:', data);
+    if(data.error){
+      throw new Error((data.error_description || data.error) + ' [' + data.error + ']');
+    }
+    crmStatus.className = 'status ok';
+    crmStatus.textContent = 'Лид создан. ID: ' + data.result;
+  })
+  .catch(err => {
+    console.error('[QUIZ] Error:', err);
+    crmStatus.className = 'status err';
+    crmStatus.textContent = 'Ошибка CRM: ' + err.message;
+  });
+}
+
+function renderResult(score, category, isChronic, failedTx){
+  const badge = el('resBadge');
+  const title = el('resTitle');
+  const text = el('resText');
+  const extra = el('resExtra');
+
+  let tTitle='', tText='';
+  if(category==='low'){
+    badge.className='badge low';
+    badge.textContent='Низкий риск';
+    tTitle='Серьёзных признаков не выявлено';
+    tText='Судя по вашим ответам, боль пока не выглядит хронической. Важно наблюдать за состоянием и не игнорировать симптомы.';
+  } else if(category==='medium'){
+    badge.className='badge medium';
+    badge.textContent='Умеренный риск';
+    tTitle='Боль требует внимания';
+    tText='Некоторые ответы могут указывать на развитие хронической боли. Рекомендуем не откладывать и разобраться в причинах.';
+  } else {
+    badge.className='badge high';
+    badge.textContent='Высокий риск';
+    tTitle='Рекомендуем обратиться к специалисту';
+    tText='Ваши ответы указывают на высокую вероятность хронической боли или неэффективного лечения. Важно не затягивать и получить профессиональную помощь.';
+  }
+  title.textContent = tTitle;
+  text.textContent  = tText;
+
+  const flags = [];
+  if(isChronic) flags.push('Боль длится долго (хроническая).');
+  if(failedTx)  flags.push('Предыдущее лечение не помогло.');
+  extra.textContent = flags.join(' ');
+}
+</script>
+</body>
+</html>
