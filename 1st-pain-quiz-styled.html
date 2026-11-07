@@ -847,7 +847,7 @@ async function sendToCRM(r) {
   console.log("[QUIZ] Payload (to proxy):", JSON.stringify({ fields }, null, 2));
 
   try {
-    const resp = await fetch('/api/lead', {
+    const resp = await fetch('https://forms.eduinterpain.ru/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields })
