@@ -12,6 +12,7 @@ const CONFIRM_OPTION_CONFIRMED = '1507';
 const BITRIX_TIMEOUT_MS = 12000;
 
 const app = express();
+app.set('trust proxy', 1); // за nginx: X-Forwarded-For доверенный, иначе express-rate-limit пишет ERR_ERL_UNEXPECTED_X_FORWARDED_FOR и лимит считает по proxy-IP
 app.use(helmet());
 app.use(express.json({ limit: '64kb' }));
 
